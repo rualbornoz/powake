@@ -86,6 +86,10 @@ h1{font-family:var(--f-display);font-weight:900;font-size:clamp(1.9rem,5vw,2.8re
 .stat{background:var(--tile);border-radius:var(--r-card);padding:16px 20px;min-width:0}
 .stat b{display:block;font-family:var(--f-display);font-size:1.7rem;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{font-size:.8rem;color:var(--muted)}
+.stats{gap:8px}
+.stats .stat{padding:10px 14px;border-radius:20px}
+.stats .stat b{font-size:1.3rem}
+.stats .stat span{font-size:.74rem;line-height:1.25}
 .stat .place-note{display:block;margin-top:4px;font-size:.74rem;line-height:1.3;color:var(--muted);text-decoration:none;overflow-wrap:anywhere}
 .stat .place-note:hover{text-decoration:underline}
 .stat .place-note[hidden]{display:none}
@@ -109,6 +113,22 @@ svg.map{display:block;width:100%;height:auto}
 .map a:hover circle,.map a:focus circle{fill-opacity:.9}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);margin-top:10px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.28)}
+
+/* Clima y océanos */
+.wxsub{margin:0 0 4px;color:var(--muted);font-size:.9rem}
+.wx .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0 10px}
+.wx .seg button{font:inherit;font-size:.85rem;font-weight:600;height:40px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;padding:0 4px;min-width:0}
+.wx .seg button[aria-pressed=true]{background:var(--btn);color:var(--on-btn);border-color:var(--btn)}
+.wx .filters{margin-bottom:12px}
+svg.wxmap{display:block;width:100%;height:auto;max-height:540px;margin:0 auto;border-radius:var(--r-sm);background:var(--tile)}
+.wxmap .wland{fill:none;stroke:var(--ink);stroke-opacity:.5;stroke-width:.7px;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.wxmap .wtxt{font-family:var(--f-display);font-weight:800;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-linejoin:round}
+.wxleg{display:flex;align-items:center;gap:10px;font-size:.8rem;color:var(--muted);margin-top:10px}
+.wxbar{flex:0 1 200px;height:10px;border-radius:99px}
+.wxsrc,.wxnote{margin:8px 0 0;font-size:.8rem;color:var(--muted)}
+.wxnote{background:var(--tile);border-radius:var(--r-sm);padding:10px 14px;color:var(--ink)}
+.wxcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
+.wxcards .wxname{grid-column:1/-1;font-weight:700;font-size:1rem}
 
 /* Registro */
 .logh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
@@ -184,14 +204,26 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
 
   <header>
     <div>
-      <p class="eyebrow" data-i18n="eyebrow">Observatorio · USGS y NTWC</p>
-      <h1 data-i18n="h1">Monitorea: Sismos y tsunamis en el mundo</h1>
+      <p class="eyebrow" data-i18n="eyebrow">Terremoto · Clima · Océanos</p>
+      <h1 data-i18n="h1">Monitorea: Sismos, clima, y tsunamis del mundo</h1>
     </div>
     <div class="stamp">
       <span id="stamp-line"></span>
       <span id="stamp-age"></span>
     </div>
   </header>
+
+  <section class="panel" aria-labelledby="map-h">
+    <h2 id="map-h" data-i18n="mapH">Epicentros y Anillo de Fuego</h2>
+    <div class="mapbox"><svg class="map" id="map" viewBox="0 0 720 300" role="img" data-i18n-aria="mapAria" aria-label="Mapamundi con continentes, el Anillo de Fuego y los epicentros de la captura"></svg></div>
+    <div class="legend">
+      <span><i style="background:var(--m4)"></i><span data-i18n="legLow">Menos de M6</span></span>
+      <span><i style="background:var(--m6)"></i><span data-i18n="legM6">M6 a 6,9</span></span>
+      <span><i style="background:var(--m7)"></i><span data-i18n="legM7">M7 o más</span></span>
+      <span><svg width="24" height="8" viewBox="0 0 24 8" aria-hidden="true"><line x1="1" y1="4" x2="23" y2="4" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3" stroke-linecap="round"/></svg><span data-i18n="legRing">Anillo de Fuego (trazado aproximado)</span></span>
+      <span data-i18n="legNote">El tamaño crece con la magnitud. Toca un punto para abrir el evento.</span>
+    </div>
+  </section>
 
   <section class="stats" aria-label="Resumen">
     <div class="stat"><b id="s-count">…</b><span data-i18n="stCount">sismos M4+ en 7 días</span></div>
@@ -219,6 +251,26 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <div class="more" id="more-wrap"><button type="button" class="btn-more" id="more" data-i18n="more">Más sismos</button></div>
   </section>
 
+  <section class="panel wx" aria-labelledby="wx-h">
+    <h2 id="wx-h" data-i18n="wxH">Clima y océanos</h2>
+    <p class="wxsub" data-i18n="wxSub">Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.</p>
+    <div class="seg" id="wx-layers" role="group" data-i18n-aria="wxLayersAria" aria-label="Capa del mapa">
+      <button type="button" data-layer="rain" data-i18n="lRain">Lluvias</button>
+      <button type="button" data-layer="pres" data-i18n="lPres">Presión</button>
+      <button type="button" data-layer="temp" data-i18n="lTemp">Temperatura</button>
+      <button type="button" data-layer="sea" data-i18n="lSea">Mar</button>
+    </div>
+    <div class="filters">
+      <select id="wx-cont" data-i18n-aria="wxContAria" aria-label="Continente"></select>
+      <select id="wx-country" data-i18n-aria="wxCountryAria" aria-label="País"></select>
+    </div>
+    <div class="mapbox"><svg class="wxmap" id="wmap" role="img" data-i18n-aria="wxMapAria" aria-label="Mapa del clima"></svg></div>
+    <div class="wxleg" id="wx-leg"></div>
+    <p class="wxsrc" id="wx-src"></p>
+    <p class="wxnote" id="wx-note" hidden></p>
+    <div class="wxcards" id="wx-cards" hidden></div>
+  </section>
+
   <section class="tsu" aria-labelledby="tsu-h">
     <div>
       <h2 id="tsu-h" data-i18n="tsuH">Alertas de tsunami</h2>
@@ -236,18 +288,6 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
         <li><a href="https://www.tsunami.gov/" target="_blank" rel="noopener" data-i18n="ntwc">NTWC, tsunami.gov ↗</a><span data-i18n="ntwcD">Alaska, Canadá y costa oeste de EE. UU.</span></li>
         <li class="cta"><a class="live" id="btn-live" href="https://earthquake.usgs.gov/earthquakes/map/" target="_blank" rel="noopener"><span data-i18n="usgs">Ver datos del USGS</span> <span aria-hidden="true">→</span></a></li>
       </ul>
-    </div>
-  </section>
-
-  <section class="panel" aria-labelledby="map-h">
-    <h2 id="map-h" data-i18n="mapH">Epicentros y Anillo de Fuego</h2>
-    <div class="mapbox"><svg class="map" id="map" viewBox="0 0 720 300" role="img" data-i18n-aria="mapAria" aria-label="Mapamundi con continentes, el Anillo de Fuego y los epicentros de la captura"></svg></div>
-    <div class="legend">
-      <span><i style="background:var(--m4)"></i><span data-i18n="legLow">Menos de M6</span></span>
-      <span><i style="background:var(--m6)"></i><span data-i18n="legM6">M6 a 6,9</span></span>
-      <span><i style="background:var(--m7)"></i><span data-i18n="legM7">M7 o más</span></span>
-      <span><svg width="24" height="8" viewBox="0 0 24 8" aria-hidden="true"><line x1="1" y1="4" x2="23" y2="4" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3" stroke-linecap="round"/></svg><span data-i18n="legRing">Anillo de Fuego (trazado aproximado)</span></span>
-      <span data-i18n="legNote">El tamaño crece con la magnitud. Toca un punto para abrir el evento.</span>
     </div>
   </section>
 
@@ -270,7 +310,7 @@ const store = {
 
 const T = {
   es: {
-    themeAria:"Cambiar entre tema claro y oscuro", eyebrow:"Observatorio · USGS y NTWC", h1:"Monitorea: Sismos y tsunamis en el mundo", usgs:"Ver datos del USGS",
+    themeAria:"Cambiar entre tema claro y oscuro", eyebrow:"Terremoto · Clima · Océanos", h1:"Monitorea: Sismos, clima, y tsunamis del mundo", usgs:"Ver datos del USGS",
     stCount:"sismos M4+ en 7 días", stMax:"magnitud máxima en 7 días", stM6:"sismos M4+ en 24 horas", stTsu:"con boletín de tsunami en 7 días",
     mapH:"Epicentros y Anillo de Fuego", mapAria:"Mapamundi con continentes, el Anillo de Fuego y los epicentros de la captura", ringLbl:"ANILLO DE FUEGO", legRing:"Anillo de Fuego (trazado aproximado)",
     legLow:"Menos de M6", legM6:"M6 a 6,9", legM7:"M7 o más", legNote:"El tamaño crece con la magnitud. Toca un punto para abrir el evento.",
@@ -292,7 +332,7 @@ const T = {
     places:["AMÉRICA DEL NORTE","SUDAMÉRICA","ÁFRICA","EUROPA","ASIA","OCEANÍA","OCÉANO PACÍFICO","OCÉANO ATLÁNTICO","OCÉANO ÍNDICO"]
   },
   en: {
-    themeAria:"Switch between light and dark theme", eyebrow:"Observatory · USGS & NTWC", h1:"Monitor: Earthquakes and tsunamis worldwide", usgs:"View USGS data",
+    themeAria:"Switch between light and dark theme", eyebrow:"Earthquakes · Weather · Oceans", h1:"Monitor: Earthquakes, weather and tsunamis worldwide", usgs:"View USGS data",
     stCount:"M4+ earthquakes in 7 days", stMax:"maximum magnitude in 7 days", stM6:"M4+ earthquakes in 24 hours", stTsu:"with tsunami bulletin in 7 days",
     mapH:"Epicenters and the Ring of Fire", mapAria:"World map with continents, the Ring of Fire and the snapshot's epicenters", ringLbl:"RING OF FIRE", legRing:"Ring of Fire (approximate)",
     legLow:"Below M6", legM6:"M6 to 6.9", legM7:"M7 or higher", legNote:"Size grows with magnitude. Tap a dot to open the event.",
@@ -327,7 +367,7 @@ function detectLang(){
 }
 
 let lang = "es";
-let limit = 10;
+let limit = 5;
 const loc = () => lang === "es" ? "es-CL" : "en-US";
 const fmt = o => new Intl.DateTimeFormat(loc(), Object.assign({hour12: lang === "en"}, o));
 const num = (v,d) => v.toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -548,7 +588,7 @@ function setLang(l, persist){
   lang = l;
   document.documentElement.lang = l;
   $("lang").value = l;
-  applyLang(); header(); stats(); drawMap(); render();
+  applyLang(); header(); stats(); drawMap(); render(); wxRefresh();
   if (persist) store.set("lang", l);
 }
 
@@ -556,6 +596,211 @@ function setTheme(t){
   document.documentElement.setAttribute("data-theme", t);
   $("theme").setAttribute("aria-checked", t === "dark" ? "true" : "false");
 }
+
+/* ===== Clima y océanos =====
+   Imágenes de lluvia (NASA IMERG) y de temperatura del mar: NASA GIBS (WMS). Presión y temperatura del aire: Open-Meteo (modelo, 1 punto cada 12°).
+   Solo funcionan con la página publicada en un hosting: el entorno de Claude bloquea las conexiones externas. */
+Object.assign(T.es, {
+  wxH:"Clima y océanos", wxSub:"Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.",
+  lRain:"Lluvias", lPres:"Presión", lTemp:"Temperatura", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
+  wxMapAria:"Mapa del clima con los continentes y la capa elegida",
+  cWorld:"Todo el mundo", cNa:"Norte y Centroamérica", cSa:"Sudamérica", cEu:"Europa", cAf:"África", cAs:"Asia", cOc:"Oceanía", allC:"Todos los países",
+  srcRain:"Intensidad de lluvia (NASA IMERG, vía GIBS), del {d} (UTC). Las zonas sin color no tuvieron lluvia medida.",
+  legLight:"Lluvia débil", legHeavy:"Lluvia intensa",
+  srcSea:"Temperatura superficial del mar (MUR) de NASA GIBS, del {d}. Las tonalidades cálidas indican agua más tibia.",
+  srcPres:"Presión a nivel del mar (Open-Meteo, ahora). A = foco de alta presión, B = foco de baja presión. Resolución aproximada de 12°.",
+  srcTemp:"Temperatura del aire a 2 m (Open-Meteo, ahora). Se marcan los focos más cálidos y más fríos. Resolución aproximada de 12°.",
+  legCold:"Más frío", legWarm:"Más cálido", legLowP:"Baja presión", legHighP:"Alta presión", mkHigh:"A", mkLow:"B",
+  wxOff:"Los mapas de clima y de océanos se activan al publicar esta página en tu hosting. Aquí, el entorno bloquea las conexiones externas.",
+  wxErr:"No se pudo cargar el clima de este lugar.", kTemp:"Temperatura", kRain:"Lluvia (última hora)", kPres:"Presión", kWind:"Viento", kHum:"Humedad", kSea:"Agua del mar"
+});
+Object.assign(T.en, {
+  wxH:"Weather and oceans", wxSub:"Rain, pressure, air temperature and sea temperature. Pick a continent or a country.",
+  lRain:"Rain", lPres:"Pressure", lTemp:"Temperature", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
+  wxMapAria:"Weather map with continents and the chosen layer",
+  cWorld:"Whole world", cNa:"North & Central America", cSa:"South America", cEu:"Europe", cAf:"Africa", cAs:"Asia", cOc:"Oceania", allC:"All countries",
+  srcRain:"Rain intensity (NASA IMERG, via GIBS), {d} (UTC). Uncolored areas had no measured rain.",
+  legLight:"Light rain", legHeavy:"Heavy rain",
+  srcSea:"Sea surface temperature (MUR) from NASA GIBS, {d}. Warmer tones mean warmer water.",
+  srcPres:"Sea-level pressure (Open-Meteo, now). H = high-pressure center, L = low-pressure center. Approx. 12° resolution.",
+  srcTemp:"Air temperature at 2 m (Open-Meteo, now). The hottest and coldest spots are marked. Approx. 12° resolution.",
+  legCold:"Colder", legWarm:"Warmer", legLowP:"Low pressure", legHighP:"High pressure", mkHigh:"H", mkLow:"L",
+  wxOff:"The weather and ocean maps switch on once this page is published on your own hosting. Here, the environment blocks outside connections.",
+  wxErr:"Could not load the weather for this place.", kTemp:"Temperature", kRain:"Rain (last hour)", kPres:"Pressure", kWind:"Wind", kHum:"Humidity", kSea:"Sea water"
+});
+const WXC = {world:[-180,180,-62,84], na:[-170,-50,7,75], sa:[-83,-33,-57,14], eu:[-25,45,34,72], af:[-20,52,-36,38], as:[25,150,-11,78], oc:[110,180,-48,-1]};
+const WXK = [["world","cWorld"],["na","cNa"],["sa","cSa"],["eu","cEu"],["af","cAf"],["as","cAs"],["oc","cOc"]];
+/* [español, inglés, lat, lon, continente] (capitales) */
+const WXP = [
+["Argentina","Argentina",-34.6,-58.4,"sa"],["Bolivia","Bolivia",-16.5,-68.15,"sa"],["Brasil","Brazil",-15.8,-47.9,"sa"],["Chile","Chile",-33.45,-70.67,"sa"],["Colombia","Colombia",4.7,-74.07,"sa"],["Ecuador","Ecuador",-0.18,-78.47,"sa"],["Perú","Peru",-12.05,-77.04,"sa"],["Uruguay","Uruguay",-34.9,-56.2,"sa"],["Venezuela","Venezuela",10.5,-66.9,"sa"],
+["Canadá","Canada",45.4,-75.7,"na"],["Costa Rica","Costa Rica",9.93,-84.08,"na"],["Cuba","Cuba",23.1,-82.4,"na"],["Estados Unidos","United States",38.9,-77.04,"na"],["Guatemala","Guatemala",14.6,-90.5,"na"],["México","Mexico",19.4,-99.1,"na"],["Panamá","Panama",8.98,-79.5,"na"],
+["Alemania","Germany",52.5,13.4,"eu"],["España","Spain",40.4,-3.7,"eu"],["Francia","France",48.86,2.35,"eu"],["Grecia","Greece",37.98,23.7,"eu"],["Islandia","Iceland",64.15,-21.9,"eu"],["Italia","Italy",41.9,12.5,"eu"],["Portugal","Portugal",38.7,-9.14,"eu"],["Reino Unido","United Kingdom",51.5,-0.12,"eu"],["Rusia","Russia",55.75,37.6,"eu"],
+["Egipto","Egypt",30.04,31.24,"af"],["Kenia","Kenya",-1.29,36.8,"af"],["Marruecos","Morocco",34.02,-6.83,"af"],["Nigeria","Nigeria",9.08,7.4,"af"],["Sudáfrica","South Africa",-25.7,28.2,"af"],
+["China","China",39.9,116.4,"as"],["Corea del Sur","South Korea",37.57,126.98,"as"],["Filipinas","Philippines",14.6,121,"as"],["India","India",28.6,77.2,"as"],["Indonesia","Indonesia",-6.2,106.8,"as"],["Irán","Iran",35.7,51.4,"as"],["Japón","Japan",35.68,139.7,"as"],["Tailandia","Thailand",13.75,100.5,"as"],["Turquía","Türkiye",39.9,32.86,"as"],
+["Australia","Australia",-35.3,149.1,"oc"],["Fiyi","Fiji",-18.14,178.44,"oc"],["Nueva Zelanda","New Zealand",-41.29,174.78,"oc"],["Papúa Nueva Guinea","Papua New Guinea",-9.44,147.18,"oc"]
+];
+const WXPRES = [[985,[59,76,192]],[1000,[120,150,230]],[1013,[238,238,238]],[1026,[240,150,120]],[1040,[180,4,38]]];
+const WXTEMP = [[-30,[43,58,140]],[-10,[90,140,200]],[5,[160,205,225]],[15,[245,235,170]],[27,[240,140,60]],[40,[165,15,21]]];
+const WXSEA = [[0,[40,30,120]],[.25,[30,100,190]],[.5,[60,180,200]],[.75,[250,220,80]],[1,[200,30,30]]];
+const WX = {layer:"rain", cont:"world", country:"", gridP:null, tok:0, card:null, cardTok:0};
+const wxS = 660/360, wxX = lo => 30 + (lo+180)*wxS, wxY = la => 10 + (84-la)*wxS;
+function wxCol(stops, v){
+  if (v <= stops[0][0]) return stops[0][1];
+  for (let i = 1; i < stops.length; i++) if (v <= stops[i][0]) {
+    const [a,ca] = stops[i-1], [b,cb] = stops[i], f = (v-a)/(b-a);
+    return ca.map((c,j) => Math.round(c + (cb[j]-c)*f));
+  }
+  return stops[stops.length-1][1];
+}
+const wxRgb = c => "rgb(" + c.join(",") + ")";
+const wxGrad = stops => "linear-gradient(90deg," + stops.map((s,i) => wxRgb(s[1]) + " " + Math.round(i/(stops.length-1)*100) + "%").join(",") + ")";
+const wxDay = n => new Date(Date.now() - n*864e5).toISOString().slice(0,10);
+const wxName = p => lang === "es" ? p[0] : p[1];
+function wxImgUrl(layer){
+  const base = "https://gibs.earthdata.nasa.gov/wms/epsg4326/best/wms.cgi?SERVICE=WMS&REQUEST=GetMap&VERSION=1.3.0&STYLES=&CRS=EPSG:4326&BBOX=-90,-180,90,180&WIDTH=2048&HEIGHT=1024";
+  return layer === "rain"
+    ? base + "&LAYERS=IMERG_Precipitation_Rate&FORMAT=image/png&TRANSPARENT=TRUE&TIME=" + wxDay(1)
+    : base + "&LAYERS=GHRSST_L4_MUR_Sea_Surface_Temperature&FORMAT=image/png&TRANSPARENT=TRUE&TIME=" + wxDay(3);
+}
+function wxNote(msg){ const n = $("wx-note"); n.hidden = !msg; n.textContent = msg || ""; }
+function wxLoadGrid(){
+  if (WX.gridP) return WX.gridP;
+  const pts = [];
+  for (let la = -60; la <= 84; la += 12) for (let lo = -180; lo < 180; lo += 12) pts.push([la,lo]);
+  const chunks = [];
+  for (let i = 0; i < pts.length; i += 130) chunks.push(pts.slice(i, i+130));
+  const p = Promise.all(chunks.map(async ch => {
+    const u = "https://api.open-meteo.com/v1/forecast?current=temperature_2m,pressure_msl&timezone=UTC&latitude=" + ch.map(q => q[0]).join(",") + "&longitude=" + ch.map(q => q[1]).join(",");
+    const r = await fetch(u); if (!r.ok) throw new Error(r.status);
+    const j = await r.json(); return Array.isArray(j) ? j : [j];
+  })).then(a => {
+    const arr = [].concat(...a);
+    return pts.map((q,i) => ({lat:q[0], lon:q[1], t:arr[i].current.temperature_2m, p:arr[i].current.pressure_msl}));
+  });
+  WX.gridP = p; p.catch(() => { if (WX.gridP === p) WX.gridP = null; });
+  return p;
+}
+/* Focos: máximos y mínimos locales de presión; los más cálidos y fríos de temperatura */
+function wxSpots(g, layer){
+  const C = 30, R = 13, at = (r,c) => g[r*C + ((c+C)%C)];
+  if (layer === "pres") {
+    const out = [];
+    for (let r = 1; r < R-1; r++) for (let c = 0; c < C; c++) {
+      const v = at(r,c).p; if (v == null) continue;
+      let mx = true, mn = true;
+      for (let dr = -1; dr <= 1; dr++) for (let dc = -1; dc <= 1; dc++) if (dr || dc) { const w = at(r+dr,c+dc).p; if (w == null) continue; if (w >= v) mx = false; if (w <= v) mn = false; }
+      if (mx && v >= 1020) out.push({...at(r,c), kind:"H", v});
+      if (mn && v <= 1008) out.push({...at(r,c), kind:"L", v});
+    }
+    return out;
+  }
+  const ok = g.filter(q => q.t != null), out = [];
+  const far = q => out.every(o => Math.hypot(((o.lon-q.lon+540)%360)-180, o.lat-q.lat) > 30);
+  [...ok].sort((a,b) => b.t - a.t).forEach(q => { if (out.filter(o => o.kind==="H").length < 3 && far(q)) out.push({...q, kind:"H", v:q.t}); });
+  [...ok].sort((a,b) => a.t - b.t).forEach(q => { if (out.filter(o => o.kind==="L").length < 3 && far(q)) out.push({...q, kind:"L", v:q.t}); });
+  return out;
+}
+function wxLegend(){
+  const t = T[lang], L = WX.layer, box = $("wx-leg"); box.textContent = "";
+  const src = $("wx-src");
+  if (L === "rain") { const bar = document.createElement("span"); bar.className = "wxbar"; bar.style.background = "linear-gradient(90deg,#cfe8ff,#6fb4f0,#2a6fd6,#5b3cc4,#c2185b)"; const l = document.createElement("span"), r = document.createElement("span"); l.textContent = t.legLight; r.textContent = t.legHeavy; box.append(l, bar, r); src.textContent = t.srcRain.replace("{d}", wxDay(1)); return; }
+  const bar = document.createElement("span"); bar.className = "wxbar";
+  let a, b;
+  if (L === "sea") { bar.style.background = wxGrad(WXSEA.map(s => [s[0], s[1]])); a = t.legCold; b = t.legWarm; src.textContent = t.srcSea.replace("{d}", wxDay(3)); }
+  else if (L === "pres") { bar.style.background = wxGrad(WXPRES); a = t.legLowP + " (985 hPa)"; b = t.legHighP + " (1040 hPa)"; src.textContent = t.srcPres; }
+  else { bar.style.background = wxGrad(WXTEMP); a = "−30 °C"; b = "40 °C"; src.textContent = t.srcTemp; }
+  const l = document.createElement("span"), r = document.createElement("span"); l.textContent = a; r.textContent = b;
+  box.append(l, bar, r);
+}
+async function wxDraw(){
+  const svg = $("wmap"), NS = "http://www.w3.org/2000/svg", tok = ++WX.tok, L = WX.layer, t = T[lang];
+  const el = (n,a,tx) => { const e = document.createElementNS(NS,n); for (const k in a) e.setAttribute(k,a[k]); if (tx != null) e.textContent = tx; return e; };
+  const b = WXC[WX.cont], x0 = wxX(b[0]), x1 = wxX(b[1]), y0 = wxY(b[3]), y1 = wxY(b[2]), vw = x1-x0, vh = y1-y0;
+  svg.textContent = ""; svg.setAttribute("viewBox", [x0,y0,vw,vh].map(v => v.toFixed(1)).join(" "));
+  const k = Math.max(.6, vw / (svg.getBoundingClientRect().width || 700));
+  const gC = el("g",{}), gL = el("g",{}), gM = el("g",{}), gP = el("g",{});
+  svg.append(el("rect",{x:x0,y:y0,width:vw,height:vh,fill:"var(--tile)"}), gC, gL, gM, gP);
+  gL.append(el("path",{class:"wland", d: LAND_SRC.map(str => "M" + str.trim().split(/\s+/).map(q => { const [lo,la] = q.split(",").map(Number); return wxX(lo).toFixed(1) + "," + wxY(Math.min(84,Math.max(-62,la))).toFixed(1); }).join("L") + "Z").join("")}));
+  const p = WX.country ? WXP.find(q => q[0] === WX.country) : null;
+  if (p) {
+    gP.append(el("circle",{cx:wxX(p[3]),cy:wxY(p[2]),r:5*k,fill:"var(--btn)",stroke:"#fff","stroke-width":2*k}));
+    gP.append(el("text",{class:"wtxt",x:wxX(p[3]),y:wxY(p[2])-9*k,"text-anchor":"middle","font-size":11*k,"stroke-width":2.5*k},wxName(p)));
+  }
+  if (L === "rain" || L === "sea") {
+    const im = el("image",{x:30,y:wxY(90),width:660,height:wxY(-90)-wxY(90),preserveAspectRatio:"none"});
+    im.setAttribute("href", wxImgUrl(L));
+    im.addEventListener("error", () => { if (tok === WX.tok) wxNote(t.wxOff); });
+    im.addEventListener("load", () => { if (tok === WX.tok) wxNote(null); });
+    gC.append(im); return;
+  }
+  try {
+    const g = await wxLoadGrid(); if (tok !== WX.tok) return;
+    wxNote(null);
+    const defs = el("defs",{}), f = el("filter",{id:"wblur",x:"-5%",y:"-5%",width:"110%",height:"110%"});
+    f.append(el("feGaussianBlur",{stdDeviation:7})); defs.append(f);
+    svg.insertBefore(defs, svg.firstChild);
+    const cells = el("g",{filter:"url(#wblur)"}), w = 12*wxS;
+    g.forEach(q => { const v = L === "pres" ? q.p : q.t; if (v == null) return;
+      cells.append(el("rect",{x:(wxX(q.lon)-w/2-1).toFixed(1),y:(wxY(q.lat)-w/2-1).toFixed(1),width:(w+2).toFixed(1),height:(w+2).toFixed(1),fill:wxRgb(wxCol(L === "pres" ? WXPRES : WXTEMP, v))})); });
+    gC.append(cells);
+    wxSpots(g, L).forEach(s => {
+      const cx = wxX(s.lon), cy = wxY(s.lat); if (cx < x0 || cx > x1 || cy < y0 || cy > y1) return;
+      const txt = L === "pres" ? t[s.kind === "H" ? "mkHigh" : "mkLow"] : (s.kind === "H" ? "▲" : "▼");
+      gM.append(el("text",{class:"wtxt",x:cx,y:cy+4*k,"text-anchor":"middle","font-size":14*k,"stroke-width":3*k},txt));
+      gM.append(el("text",{class:"wtxt",x:cx,y:cy+16*k,"text-anchor":"middle","font-size":9*k,"stroke-width":2.5*k},Math.round(s.v) + (L === "pres" ? "" : "°")));
+    });
+  } catch (e) { if (tok === WX.tok) wxNote(t.wxOff); }
+}
+function wxCard(){
+  const box = $("wx-cards"), c = WX.card, t = T[lang]; box.textContent = "";
+  if (!c) { box.hidden = true; return; }
+  box.hidden = false;
+  const add = (val, lab) => { const d = document.createElement("div"); d.className = "stat"; const b = document.createElement("b"); b.textContent = val; const s = document.createElement("span"); s.textContent = lab; d.append(b, s); box.append(d); };
+  const n = document.createElement("div"); n.className = "wxname"; n.textContent = wxName(c.p); box.append(n);
+  if (c.err) { const e = document.createElement("div"); e.className = "wxnote"; e.style.gridColumn = "1/-1"; e.textContent = t.wxErr; box.append(e); return; }
+  const cu = c.cur;
+  add(num(cu.temperature_2m,1) + " °C", t.kTemp); add(num(cu.precipitation,1) + " mm", t.kRain);
+  add(num(cu.pressure_msl,0) + " hPa", t.kPres); add(num(cu.wind_speed_10m,0) + " km/h", t.kWind); add(num(cu.relative_humidity_2m,0) + " %", t.kHum);
+  if (c.sea != null) add(num(c.sea,1) + " °C", t.kSea);
+}
+async function wxCountry(){
+  const p = WX.country ? WXP.find(q => q[0] === WX.country) : null, tok = ++WX.cardTok;
+  if (!p) { WX.card = null; wxCard(); return; }
+  try {
+    const q = "latitude=" + p[2] + "&longitude=" + p[3];
+    const [a, m] = await Promise.all([
+      fetch("https://api.open-meteo.com/v1/forecast?" + q + "&current=temperature_2m,relative_humidity_2m,precipitation,pressure_msl,wind_speed_10m&wind_speed_unit=kmh&timezone=UTC").then(r => { if (!r.ok) throw 0; return r.json(); }),
+      fetch("https://marine-api.open-meteo.com/v1/marine?" + q + "&current=sea_surface_temperature&timezone=UTC").then(r => r.ok ? r.json() : null).catch(() => null)
+    ]);
+    if (tok !== WX.cardTok) return;
+    WX.card = {p, cur:a.current, sea: m && m.current ? m.current.sea_surface_temperature : null};
+  } catch (e) { if (tok !== WX.cardTok) return; WX.card = {p, err:true}; }
+  wxCard();
+}
+function wxFill(){
+  const t = T[lang], cs = $("wx-cont"), cn = $("wx-country");
+  cs.textContent = ""; WXK.forEach(([id,key]) => { const o = document.createElement("option"); o.value = id; o.textContent = t[key]; cs.append(o); }); cs.value = WX.cont;
+  cn.textContent = ""; const o0 = document.createElement("option"); o0.value = ""; o0.textContent = t.allC; cn.append(o0);
+  WXP.filter(q => WX.cont === "world" || q[4] === WX.cont).sort((a,b) => wxName(a).localeCompare(wxName(b), lang)).forEach(q => { const o = document.createElement("option"); o.value = q[0]; o.textContent = wxName(q); cn.append(o); });
+  cn.value = WX.country;
+}
+function wxRefresh(){
+  wxFill(); wxLegend(); wxCard(); wxDraw();
+  document.querySelectorAll("#wx-layers button").forEach(b => b.setAttribute("aria-pressed", b.dataset.layer === WX.layer ? "true" : "false"));
+}
+document.querySelectorAll("#wx-layers button").forEach(b => b.addEventListener("click", () => { WX.layer = b.dataset.layer; wxNote(null); wxRefresh(); }));
+$("wx-cont").addEventListener("change", e => {
+  WX.cont = e.target.value;
+  if (WX.country && WX.cont !== "world" && WXP.find(q => q[0] === WX.country)[4] !== WX.cont) { WX.country = ""; WX.card = null; WX.cardTok++; }
+  wxRefresh();
+});
+$("wx-country").addEventListener("change", e => {
+  WX.country = e.target.value;
+  if (WX.country && WX.cont === "world") WX.cont = WXP.find(q => q[0] === WX.country)[4];
+  wxRefresh(); wxCountry();
+});
+let wxrt; window.addEventListener("resize", () => { clearTimeout(wxrt); wxrt = setTimeout(wxDraw, 200); });
+setInterval(() => { WX.gridP = null; if (WX.layer === "pres" || WX.layer === "temp") wxDraw(); }, 1800000);
 
 /* Inicio: claro por defecto; idioma según preferencia guardada o zona horaria */
 setTheme(store.get("theme") === "dark" ? "dark" : "light");
@@ -566,8 +811,8 @@ $("theme").addEventListener("click", () => {
   const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
   setTheme(next); store.set("theme", next);
 });
-["f-mag","f-sort"].forEach(id => $(id).addEventListener("change", () => { limit = 10; render(); }));
-$("f-q").addEventListener("input", () => { limit = 10; render(); });
+["f-mag","f-sort"].forEach(id => $(id).addEventListener("change", () => { limit = 5; render(); }));
+$("f-q").addEventListener("input", () => { limit = 5; render(); });
 $("more").addEventListener("click", () => { limit = 30; render(); });
 let rzt; window.addEventListener("resize", () => { clearTimeout(rzt); rzt = setTimeout(drawMap, 150); });
 setInterval(() => { header(); render(); }, 60000);

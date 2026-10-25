@@ -168,6 +168,8 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appeara
 .btn-more{font:inherit;font-weight:600;font-size:.92rem;background:var(--surface);color:var(--ink);width:100%;border:1px solid var(--gray-line);border-radius:var(--r-ctl);padding:12px 28px;box-shadow:none;cursor:pointer}
 
 
+footer .credit a{color:inherit;text-decoration:underline;font-weight:600}
+footer .credit a:hover{color:var(--ink)}
 footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 
 @media (max-width:720px){
@@ -301,6 +303,7 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
   <footer>
     <span data-i18n="foot1">Fuentes: USGS Earthquake Hazards Program (feed de sismos M4,5+ de los últimos 7 días y conteos M4+ de su API) y tsunami.gov. Las horas se muestran en tu hora local. Si el USGS no responde, la página muestra una captura guardada.</span>
     <span data-i18n="foot2">Esta página no reemplaza los avisos oficiales. Ante una alerta de tsunami, sigue las instrucciones de las autoridades locales.</span>
+    <span class="credit">Powake Inc. | <span data-i18n="by">Creado por</span> <a href="https://rualbornoz.framer.website/" target="_blank" rel="noopener">Rubén Albornoz</a></span>
   </footer>
 </div>
 
@@ -323,7 +326,7 @@ const T = {
     legLow:"Menos de M6", legM6:"M6 a 6,9", legM7:"M7 o más", legNote:"El tamaño crece con la magnitud. Toca un punto para abrir el evento.",
     logH:"Últimos sismos del planeta", minMag:"Magnitud mínima", o0:"Magnitudes", o5:"M5 o más", o6:"M6 o más", o7:"M7 o más",
     sort:"Ordenar por", sTime:"Más recientes", sMag:"Mayor magnitud",
-    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", more:"Más sismos", less:"Menos sismos",
+    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", by:"Creado por", more:"Más sismos", less:"Menos sismos",
     tsuH:"Alertas de tsunami", badge:"Sin alerta al 10 oct · NTWC",
     tsu1:"Al 10 de octubre, el Centro Nacional de Alerta de Tsunamis de EE. UU. informaba que no había advertencia, aviso, vigilancia ni amenaza vigente para Alaska, Columbia Británica y la costa oeste de EE. UU. Revisa tsunami.gov para el estado actual.",
     tsu2:"Hay una declaración informativa por el sismo de Panamá del 9 de octubre (20:25 UTC). El NTWC lo cita como M6,9 y el USGS lo lista como M6,6, con boletín de tsunami asociado.",
@@ -345,7 +348,7 @@ const T = {
     legLow:"Below M6", legM6:"M6 to 6.9", legM7:"M7 or higher", legNote:"Size grows with magnitude. Tap a dot to open the event.",
     logH:"Latest earthquakes on the planet", minMag:"Minimum magnitude", o0:"Magnitudes", o5:"M5 or higher", o6:"M6 or higher", o7:"M7 or higher",
     sort:"Sort by", sTime:"Most recent", sMag:"Largest first",
-    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", more:"More earthquakes", less:"Fewer earthquakes",
+    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", by:"Created by", more:"More earthquakes", less:"Fewer earthquakes",
     tsuH:"Tsunami alerts", badge:"No alert on Oct 10 · NTWC",
     tsu1:"As of October 10, the US National Tsunami Warning Center reported no warning, advisory, watch or threat in effect for Alaska, British Columbia and the US West Coast. Check tsunami.gov for the current status.",
     tsu2:"An informational statement is in effect for the October 9 Panama earthquake (20:25 UTC). The NTWC cites it as M6.9 and the USGS lists it as M6.6, with an associated tsunami bulletin.",

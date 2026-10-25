@@ -52,8 +52,8 @@ header{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-co
 .brand span{font-family:var(--f-display);font-weight:900;font-size:1.6rem;letter-spacing:-.01em;color:var(--ink);line-height:1}
 .bar select{background:var(--surface);height:32px;padding:0 14px;font-size:.85rem;font-weight:700;letter-spacing:.05em}
 .switch{display:inline-flex;background:none;border:0;padding:0;cursor:pointer;border-radius:var(--r-ctl)}
-.switch .track{position:relative;width:58px;height:32px;border-radius:var(--r-ctl);background:var(--btn);transition:background .15s}
-.switch .thumb{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--on-btn);color:var(--btn);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.switch .track{position:relative;width:58px;height:32px;border-radius:var(--r-ctl);background:var(--tile);transition:background .15s}
+.switch .thumb{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;background:var(--btn);color:var(--on-btn);display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .switch .i-moon{display:none}
 .switch[aria-checked="true"] .thumb{transform:translateX(26px)}
 .switch[aria-checked="true"] .i-sun{display:none}
@@ -89,7 +89,7 @@ h1{font-family:var(--f-display);font-weight:900;font-size:clamp(1.9rem,5vw,2.8re
 .stats{gap:8px}
 .stats .stat{padding:10px 14px;border-radius:20px}
 .stats .stat b{font-size:1.3rem;font-weight:800}
-.stats .stat span{font-size:.74rem;line-height:1.25}
+.stats .stat span{font-size:.86rem;line-height:1.25}
 .stat .place-note{display:block;margin-top:4px;font-size:.74rem;line-height:1.3;color:var(--muted);text-decoration:none;overflow-wrap:anywhere}
 .stat .place-note:hover{text-decoration:underline}
 .stat .place-note[hidden]{display:none}
@@ -118,6 +118,7 @@ svg.map{display:block;width:100%;height:auto}
 .wxsub{margin:0 0 4px;color:var(--muted);font-size:.9rem}
 .wx .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0 10px}
 .wx .seg button{font:inherit;font-size:.85rem;font-weight:600;height:40px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;padding:0 4px;min-width:0}
+@media (max-width:560px){.wx .seg{gap:4px}.wx .seg button{font-size:.74rem;letter-spacing:-.01em}}
 .wx .seg button[aria-pressed=true]{background:var(--btn);color:var(--on-btn);border-color:var(--btn)}
 .wx .filters{margin-bottom:12px}
 svg.wxmap{display:block;width:100%;height:auto;max-height:540px;margin:0 auto;border-radius:var(--r-sm);background:var(--surface)}
@@ -131,7 +132,8 @@ svg.wxmap{display:block;width:100%;height:auto;max-height:540px;margin:0 auto;bo
 .wxleg{display:flex;align-items:center;gap:10px;font-size:.8rem;color:var(--muted);margin-top:10px}
 .wxbar{flex:0 1 200px;height:10px;border-radius:99px}
 .wxsrc,.wxnote{margin:8px 0 0;font-size:.8rem;color:var(--muted)}
-.wxnote{background:var(--tile);border-radius:var(--r-sm);padding:10px 14px;color:var(--ink)}
+.wxnote{background:#fdf6d8;border-radius:var(--r-sm);padding:10px 14px;color:#5c4a00}
+:root[data-theme="dark"] .wxnote{background:#3a3418;color:#f3e7a8}
 .wxcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
 .wxcards .wxname{grid-column:1/-1;font-weight:700;font-size:1rem}
 
@@ -260,10 +262,10 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <h2 id="wx-h" data-i18n="wxH">Clima y océanos</h2>
     <p class="wxsub" data-i18n="wxSub">Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.</p>
     <div class="seg" id="wx-layers" role="group" data-i18n-aria="wxLayersAria" aria-label="Capa del mapa">
-      <button type="button" data-layer="rain" data-i18n="lRain">Lluvias</button>
+      <button type="button" data-layer="temp" data-i18n="lTemp">Temp</button>
       <button type="button" data-layer="pres" data-i18n="lPres">Presión</button>
-      <button type="button" data-layer="temp" data-i18n="lTemp">Temperatura</button>
       <button type="button" data-layer="sea" data-i18n="lSea">Mar</button>
+      <button type="button" data-layer="rain" data-i18n="lRain">Lluvias</button>
     </div>
     <div class="filters">
       <select id="wx-cont" data-i18n-aria="wxContAria" aria-label="Continente"></select>
@@ -321,7 +323,7 @@ const T = {
     legLow:"Menos de M6", legM6:"M6 a 6,9", legM7:"M7 o más", legNote:"El tamaño crece con la magnitud. Toca un punto para abrir el evento.",
     logH:"Últimos sismos del planeta", minMag:"Magnitud mínima", o0:"Magnitudes", o5:"M5 o más", o6:"M6 o más", o7:"M7 o más",
     sort:"Ordenar por", sTime:"Más recientes", sMag:"Mayor magnitud",
-    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", more:"Más sismos",
+    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", more:"Más sismos", less:"Menos sismos",
     tsuH:"Alertas de tsunami", badge:"Sin alerta al 10 oct · NTWC",
     tsu1:"Al 10 de octubre, el Centro Nacional de Alerta de Tsunamis de EE. UU. informaba que no había advertencia, aviso, vigilancia ni amenaza vigente para Alaska, Columbia Británica y la costa oeste de EE. UU. Revisa tsunami.gov para el estado actual.",
     tsu2:"Hay una declaración informativa por el sismo de Panamá del 9 de octubre (20:25 UTC). El NTWC lo cita como M6,9 y el USGS lo lista como M6,6, con boletín de tsunami asociado.",
@@ -343,7 +345,7 @@ const T = {
     legLow:"Below M6", legM6:"M6 to 6.9", legM7:"M7 or higher", legNote:"Size grows with magnitude. Tap a dot to open the event.",
     logH:"Latest earthquakes on the planet", minMag:"Minimum magnitude", o0:"Magnitudes", o5:"M5 or higher", o6:"M6 or higher", o7:"M7 or higher",
     sort:"Sort by", sTime:"Most recent", sMag:"Largest first",
-    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", more:"More earthquakes",
+    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", more:"More earthquakes", less:"Fewer earthquakes",
     tsuH:"Tsunami alerts", badge:"No alert on Oct 10 · NTWC",
     tsu1:"As of October 10, the US National Tsunami Warning Center reported no warning, advisory, watch or threat in effect for Alaska, British Columbia and the US West Coast. Check tsunami.gov for the current status.",
     tsu2:"An informational statement is in effect for the October 9 Panama earthquake (20:25 UTC). The NTWC cites it as M6.9 and the USGS lists it as M6.6, with an associated tsunami bulletin.",
@@ -532,7 +534,8 @@ function render(){
   list.sort((a,b) => sort==="mag" ? b.mag-a.mag || b.time-a.time : b.time-a.time);
   const shown = list.slice(0, limit);
   $("f-count").textContent = shown.length + " " + t.of + " " + list.length;
-  $("more-wrap").hidden = !(limit < 30 && list.length > limit);
+  $("more-wrap").hidden = list.length <= 5;
+  { const mb = $("more"), key = limit > 5 ? "less" : "more"; mb.setAttribute("data-i18n", key); mb.textContent = T[lang][key]; }
   const ul = $("rows"); ul.textContent = "";
   if (!list.length){ const li=document.createElement("li"); li.className="empty"; li.textContent=t.empty; ul.append(li); return; }
   const fDay = fmt({day:"2-digit",month:"short"}), fHour = fmt({hour:"2-digit",minute:"2-digit"});
@@ -607,7 +610,7 @@ function setTheme(t){
    Solo funcionan con la página publicada en un hosting: el entorno de Claude bloquea las conexiones externas. */
 Object.assign(T.es, {
   wxH:"Clima y océanos", wxSub:"Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.",
-  lRain:"Lluvias", lPres:"Presión", lTemp:"Temperatura", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
+  lRain:"Lluvias", lPres:"Presión", lTemp:"Temp", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
   wxMapAria:"Mapa del clima con los continentes y la capa elegida",
   cWorld:"Todo el mundo", cNa:"Norte y Centroamérica", cSa:"Sudamérica", cEu:"Europa", cAf:"África", cAs:"Asia", cOc:"Oceanía", allC:"Todos los países",
   srcRain:"Lluvia ahora, en mm por hora (Open-Meteo). Las zonas sin color no tienen lluvia en este momento. Resolución aproximada de 8°.",
@@ -616,12 +619,12 @@ Object.assign(T.es, {
   srcPres:"Presión a nivel del mar (Open-Meteo, ahora). A = foco de alta presión, B = foco de baja presión. Resolución aproximada de 12°.",
   srcTemp:"Temperatura del aire a 2 m (Open-Meteo, ahora). Se marcan los focos más cálidos y más fríos. Resolución aproximada de 12°.",
   legCold:"Más frío", legWarm:"Más cálido", legLowP:"Baja presión", legHighP:"Alta presión", mkHigh:"A", mkLow:"B",
-  wxOff:"Los mapas de clima y de océanos se activan al publicar esta página en tu hosting. Aquí, el entorno bloquea las conexiones externas.",
+  wxOff:"Información de mapas con problemas de conexión",
   wxErr:"No se pudo cargar el clima de este lugar.", kTemp:"Temperatura", kRain:"Lluvia (última hora)", kPres:"Presión", kWind:"Viento", kHum:"Humedad", kSea:"Agua del mar"
 });
 Object.assign(T.en, {
   wxH:"Weather and oceans", wxSub:"Rain, pressure, air temperature and sea temperature. Pick a continent or a country.",
-  lRain:"Rain", lPres:"Pressure", lTemp:"Temperature", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
+  lRain:"Rain", lPres:"Pressure", lTemp:"Temp", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
   wxMapAria:"Weather map with continents and the chosen layer",
   cWorld:"Whole world", cNa:"North & Central America", cSa:"South America", cEu:"Europe", cAf:"Africa", cAs:"Asia", cOc:"Oceania", allC:"All countries",
   srcRain:"Rain right now, in mm per hour (Open-Meteo). Uncolored areas have no rain at the moment. Approx. 8° resolution.",
@@ -630,7 +633,7 @@ Object.assign(T.en, {
   srcPres:"Sea-level pressure (Open-Meteo, now). H = high-pressure center, L = low-pressure center. Approx. 12° resolution.",
   srcTemp:"Air temperature at 2 m (Open-Meteo, now). The hottest and coldest spots are marked. Approx. 12° resolution.",
   legCold:"Colder", legWarm:"Warmer", legLowP:"Low pressure", legHighP:"High pressure", mkHigh:"H", mkLow:"L",
-  wxOff:"The weather and ocean maps switch on once this page is published on your own hosting. Here, the environment blocks outside connections.",
+  wxOff:"Map data unavailable due to connection problems",
   wxErr:"Could not load the weather for this place.", kTemp:"Temperature", kRain:"Rain (last hour)", kPres:"Pressure", kWind:"Wind", kHum:"Humidity", kSea:"Sea water"
 });
 const WXC = {world:[-180,180,-62,84], na:[-170,-50,7,75], sa:[-83,-33,-57,14], eu:[-25,45,34,72], af:[-20,52,-36,38], as:[25,150,-11,78], oc:[110,180,-48,-1]};
@@ -648,7 +651,7 @@ const WXRAIN = [[.1,[207,232,255]],[1,[111,180,240]],[3,[42,111,214]],[6,[91,60,
 const WXPRES = [[985,[59,76,192]],[1000,[120,150,230]],[1013,[238,238,238]],[1026,[240,150,120]],[1040,[180,4,38]]];
 const WXTEMP = [[-30,[43,58,140]],[-10,[90,140,200]],[5,[160,205,225]],[15,[245,235,170]],[27,[240,140,60]],[40,[165,15,21]]];
 const WXSEA = [[0,[40,30,120]],[.25,[30,100,190]],[.5,[60,180,200]],[.75,[250,220,80]],[1,[200,30,30]]];
-const WX = {layer:"rain", cont:"world", country:"", gridP:null, tok:0, card:null, cardTok:0, rainP:null};
+const WX = {layer:"temp", cont:"world", country:"", gridP:null, tok:0, card:null, cardTok:0, rainP:null};
 const wxS = 660/360, wxX = lo => 30 + (lo+180)*wxS, wxY = la => 10 + (84-la)*wxS;
 function wxCol(stops, v){
   if (v <= stops[0][0]) return stops[0][1];
@@ -842,7 +845,7 @@ $("theme").addEventListener("click", () => {
 });
 ["f-mag","f-sort"].forEach(id => $(id).addEventListener("change", () => { limit = 5; render(); }));
 $("f-q").addEventListener("input", () => { limit = 5; render(); });
-$("more").addEventListener("click", () => { limit = 30; render(); });
+$("more").addEventListener("click", () => { limit = limit > 5 ? 5 : 30; render(); });
 let rzt; window.addEventListener("resize", () => { clearTimeout(rzt); rzt = setTimeout(drawMap, 150); });
 setInterval(() => { header(); render(); }, 60000);
 setInterval(() => { if (live) loadLive(); }, 300000);

@@ -603,14 +603,14 @@ function setTheme(t){
 }
 
 /* ===== Clima y océanos =====
-   Imágenes de lluvia (NASA IMERG) y de temperatura del mar: NASA GIBS (WMS). Presión y temperatura del aire: Open-Meteo (modelo, 1 punto cada 12°).
+   Imágenes de temperatura del mar: NASA GIBS (WMS). Lluvia, presión y temperatura del aire: Open-Meteo (modelo, 1 punto cada 12°).
    Solo funcionan con la página publicada en un hosting: el entorno de Claude bloquea las conexiones externas. */
 Object.assign(T.es, {
   wxH:"Clima y océanos", wxSub:"Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.",
   lRain:"Lluvias", lPres:"Presión", lTemp:"Temperatura", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
   wxMapAria:"Mapa del clima con los continentes y la capa elegida",
   cWorld:"Todo el mundo", cNa:"Norte y Centroamérica", cSa:"Sudamérica", cEu:"Europa", cAf:"África", cAs:"Asia", cOc:"Oceanía", allC:"Todos los países",
-  srcRain:"Intensidad de lluvia (NASA IMERG, vía GIBS), del {d} (UTC). Las zonas sin color no tuvieron lluvia medida.",
+  srcRain:"Lluvia ahora, en mm por hora (Open-Meteo). Las zonas sin color no tienen lluvia en este momento. Resolución aproximada de 8°.",
   legLight:"Lluvia débil", legHeavy:"Lluvia intensa",
   srcSea:"Temperatura superficial del mar (MUR) de NASA GIBS, del {d}. Las tonalidades cálidas indican agua más tibia.",
   srcPres:"Presión a nivel del mar (Open-Meteo, ahora). A = foco de alta presión, B = foco de baja presión. Resolución aproximada de 12°.",
@@ -624,7 +624,7 @@ Object.assign(T.en, {
   lRain:"Rain", lPres:"Pressure", lTemp:"Temperature", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
   wxMapAria:"Weather map with continents and the chosen layer",
   cWorld:"Whole world", cNa:"North & Central America", cSa:"South America", cEu:"Europe", cAf:"Africa", cAs:"Asia", cOc:"Oceania", allC:"All countries",
-  srcRain:"Rain intensity (NASA IMERG, via GIBS), {d} (UTC). Uncolored areas had no measured rain.",
+  srcRain:"Rain right now, in mm per hour (Open-Meteo). Uncolored areas have no rain at the moment. Approx. 8° resolution.",
   legLight:"Light rain", legHeavy:"Heavy rain",
   srcSea:"Sea surface temperature (MUR) from NASA GIBS, {d}. Warmer tones mean warmer water.",
   srcPres:"Sea-level pressure (Open-Meteo, now). H = high-pressure center, L = low-pressure center. Approx. 12° resolution.",
@@ -644,10 +644,11 @@ const WXP = [
 ["China","China",39.9,116.4,"as"],["Corea del Sur","South Korea",37.57,126.98,"as"],["Filipinas","Philippines",14.6,121,"as"],["India","India",28.6,77.2,"as"],["Indonesia","Indonesia",-6.2,106.8,"as"],["Irán","Iran",35.7,51.4,"as"],["Japón","Japan",35.68,139.7,"as"],["Tailandia","Thailand",13.75,100.5,"as"],["Turquía","Türkiye",39.9,32.86,"as"],
 ["Australia","Australia",-35.3,149.1,"oc"],["Fiyi","Fiji",-18.14,178.44,"oc"],["Nueva Zelanda","New Zealand",-41.29,174.78,"oc"],["Papúa Nueva Guinea","Papua New Guinea",-9.44,147.18,"oc"]
 ];
+const WXRAIN = [[.1,[207,232,255]],[1,[111,180,240]],[3,[42,111,214]],[6,[91,60,196]],[12,[194,24,91]]];
 const WXPRES = [[985,[59,76,192]],[1000,[120,150,230]],[1013,[238,238,238]],[1026,[240,150,120]],[1040,[180,4,38]]];
 const WXTEMP = [[-30,[43,58,140]],[-10,[90,140,200]],[5,[160,205,225]],[15,[245,235,170]],[27,[240,140,60]],[40,[165,15,21]]];
 const WXSEA = [[0,[40,30,120]],[.25,[30,100,190]],[.5,[60,180,200]],[.75,[250,220,80]],[1,[200,30,30]]];
-const WX = {layer:"rain", cont:"world", country:"", gridP:null, tok:0, card:null, cardTok:0};
+const WX = {layer:"rain", cont:"world", country:"", gridP:null, tok:0, card:null, cardTok:0, rainP:null};
 const wxS = 660/360, wxX = lo => 30 + (lo+180)*wxS, wxY = la => 10 + (84-la)*wxS;
 function wxCol(stops, v){
   if (v <= stops[0][0]) return stops[0][1];
@@ -685,6 +686,20 @@ function wxLoadGrid(){
   WX.gridP = p; p.catch(() => { if (WX.gridP === p) WX.gridP = null; });
   return p;
 }
+function wxLoadRain(){
+  if (WX.rainP) return WX.rainP;
+  const pts = [];
+  for (let la = -60; la <= 84; la += 8) for (let lo = -180; lo < 180; lo += 8) pts.push([la,lo]);
+  const chunks = [];
+  for (let i = 0; i < pts.length; i += 130) chunks.push(pts.slice(i, i+130));
+  const p = Promise.all(chunks.map(async ch => {
+    const u = "https://api.open-meteo.com/v1/forecast?current=precipitation&timezone=UTC&latitude=" + ch.map(q => q[0]).join(",") + "&longitude=" + ch.map(q => q[1]).join(",");
+    const r = await fetch(u); if (!r.ok) throw new Error(r.status);
+    const j = await r.json(); return Array.isArray(j) ? j : [j];
+  })).then(a => { const arr = [].concat(...a); return pts.map((q,i) => ({lat:q[0], lon:q[1], r:arr[i].current.precipitation})); });
+  WX.rainP = p; p.catch(() => { if (WX.rainP === p) WX.rainP = null; });
+  return p;
+}
 /* Focos: máximos y mínimos locales de presión; los más cálidos y fríos de temperatura */
 function wxSpots(g, layer){
   const C = 30, R = 13, at = (r,c) => g[r*C + ((c+C)%C)];
@@ -708,7 +723,7 @@ function wxSpots(g, layer){
 function wxLegend(){
   const t = T[lang], L = WX.layer, box = $("wx-leg"); box.textContent = "";
   const src = $("wx-src");
-  if (L === "rain") { const bar = document.createElement("span"); bar.className = "wxbar"; bar.style.background = "linear-gradient(90deg,#cfe8ff,#6fb4f0,#2a6fd6,#5b3cc4,#c2185b)"; const l = document.createElement("span"), r = document.createElement("span"); l.textContent = t.legLight; r.textContent = t.legHeavy; box.append(l, bar, r); src.textContent = t.srcRain.replace("{d}", wxDay(1)); return; }
+  if (L === "rain") { const bar = document.createElement("span"); bar.className = "wxbar"; bar.style.background = wxGrad(WXRAIN); const l = document.createElement("span"), r = document.createElement("span"); l.textContent = t.legLight; r.textContent = t.legHeavy; box.append(l, bar, r); src.textContent = t.srcRain; return; }
   const bar = document.createElement("span"); bar.className = "wxbar";
   let a, b;
   if (L === "sea") { bar.style.background = wxGrad(WXSEA.map(s => [s[0], s[1]])); a = t.legCold; b = t.legWarm; src.textContent = t.srcSea.replace("{d}", wxDay(3)); }
@@ -738,7 +753,7 @@ async function wxDraw(){
     gP.append(el("circle",{cx:wxX(p[3]),cy:wxY(p[2]),r:5*k,fill:"var(--btn)",stroke:"#fff","stroke-width":2*k}));
     gP.append(el("text",{class:"wtxt",x:wxX(p[3]),y:wxY(p[2])-9*k,"text-anchor":"middle","font-size":11*k,"stroke-width":2.5*k},wxName(p)));
   }
-  if (L === "rain" || L === "sea") {
+  if (L === "sea") {
     const im = el("image",{x:30,y:wxY(90),width:660,height:wxY(-90)-wxY(90),preserveAspectRatio:"none"});
     im.setAttribute("href", wxImgUrl(L));
     im.addEventListener("error", () => { if (tok === WX.tok) wxNote(t.wxOff); });
@@ -746,16 +761,18 @@ async function wxDraw(){
     gC.append(im); return;
   }
   try {
-    const g = await wxLoadGrid(); if (tok !== WX.tok) return;
+    const g = L === "rain" ? await wxLoadRain() : await wxLoadGrid(); if (tok !== WX.tok) return;
     wxNote(null);
     const defs = el("defs",{}), f = el("filter",{id:"wblur",x:"-5%",y:"-5%",width:"110%",height:"110%"});
-    f.append(el("feGaussianBlur",{stdDeviation:7})); defs.append(f);
+    f.append(el("feGaussianBlur",{stdDeviation:L === "rain" ? 5 : 7})); defs.append(f);
     svg.insertBefore(defs, svg.firstChild);
-    const cells = el("g",{filter:"url(#wblur)"}), w = 12*wxS;
-    g.forEach(q => { const v = L === "pres" ? q.p : q.t; if (v == null) return;
+    const cells = el("g",{filter:"url(#wblur)"}), w = (L === "rain" ? 8 : 12)*wxS;
+    if (L === "rain") g.forEach(q => { if (q.r == null || q.r < .1) return;
+      cells.append(el("rect",{x:(wxX(q.lon)-w/2-1).toFixed(1),y:(wxY(q.lat)-w/2-1).toFixed(1),width:(w+2).toFixed(1),height:(w+2).toFixed(1),fill:wxRgb(wxCol(WXRAIN, q.r)),"fill-opacity":Math.min(.95,.45+q.r/6).toFixed(2)})); });
+    else g.forEach(q => { const v = L === "pres" ? q.p : q.t; if (v == null) return;
       cells.append(el("rect",{x:(wxX(q.lon)-w/2-1).toFixed(1),y:(wxY(q.lat)-w/2-1).toFixed(1),width:(w+2).toFixed(1),height:(w+2).toFixed(1),fill:wxRgb(wxCol(L === "pres" ? WXPRES : WXTEMP, v))})); });
     gC.append(cells);
-    wxSpots(g, L).forEach(s => {
+    (L === "rain" ? [] : wxSpots(g, L)).forEach(s => {
       const cx = wxX(s.lon), cy = wxY(s.lat); if (cx < x0 || cx > x1 || cy < y0 || cy > y1) return;
       const txt = L === "pres" ? t[s.kind === "H" ? "mkHigh" : "mkLow"] : (s.kind === "H" ? "▲" : "▼");
       gM.append(el("text",{class:"wtxt",x:cx,y:cy+4*k,"text-anchor":"middle","font-size":14*k,"stroke-width":3*k},txt));
@@ -812,7 +829,7 @@ $("wx-country").addEventListener("change", e => {
   wxRefresh(); wxCountry();
 });
 let wxrt; window.addEventListener("resize", () => { clearTimeout(wxrt); wxrt = setTimeout(wxDraw, 200); });
-setInterval(() => { WX.gridP = null; if (WX.layer === "pres" || WX.layer === "temp") wxDraw(); }, 1800000);
+setInterval(() => { WX.gridP = null; WX.rainP = null; if (WX.layer === "pres" || WX.layer === "temp" || WX.layer === "rain") wxDraw(); }, 1800000);
 
 /* Inicio: claro por defecto; idioma según preferencia guardada o zona horaria */
 setTheme(store.get("theme") === "dark" ? "dark" : "light");

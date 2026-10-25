@@ -1,2 +1,2 @@
 # powake
-Monitorea de sismos y taunamis
+Monitoreo de sismos, clima, y alertas de tsunamis

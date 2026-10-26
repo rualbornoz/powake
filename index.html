@@ -74,6 +74,8 @@ h1{font-family:var(--f-display);font-weight:900;font-size:clamp(1.9rem,5vw,2.8re
 .badge.ok{background:var(--ok-soft);color:var(--ok)}
 .badge.info{background:var(--accent-soft);color:var(--accent)}
 .tsu p{margin:8px 0 0;min-width:0}
+.tsu .rows{margin-top:10px}
+.tsu .row:first-child{border-top:1px solid var(--line)}
 .tsu .small{font-size:.85rem;color:var(--muted)}
 .links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .links a{font-weight:500}
@@ -282,11 +284,10 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
 
   <section class="tsu" aria-labelledby="tsu-h">
     <div>
-      <h2 id="tsu-h" data-i18n="tsuH">Alertas de tsunami</h2>
-      <span class="badge ok" data-i18n="badge">Sin alerta al 10 oct · NTWC</span>
-      <p data-i18n="tsu1">Al 10 de octubre, el Centro Nacional de Alerta de Tsunamis de EE. UU. informaba que no había advertencia, aviso, vigilancia ni amenaza vigente para Alaska, Columbia Británica y la costa oeste de EE. UU. Revisa tsunami.gov para el estado actual.</p>
-      <p data-i18n="tsu2">Hay una declaración informativa por el sismo de Panamá del 9 de octubre (20:25 UTC). El NTWC lo cita como M6,9 y el USGS lo lista como M6,6, con boletín de tsunami asociado.</p>
-      <p class="small" data-i18n="tsu3">No verificado en esta captura: PTWC (Pacífico), SHOA (Chile) y Océano Índico. Consúltalos en las fuentes oficiales.</p>
+      <h2 id="tsu-h" data-i18n="tsuH">Últimas alertas de tsunami</h2>
+      <span class="badge info" id="tsu-badge"></span>
+      <ul class="rows" id="tsu-rows"></ul>
+      <p class="small" data-i18n="tsuNote">Son sismos con boletín de tsunami asociado en el USGS. No confirman que haya ocurrido un tsunami. Para alertas vigentes consulta PTWC, SHOA y NTWC en las fuentes oficiales.</p>
     </div>
     <div>
       <h2 data-i18n="srcH">Fuentes oficiales en vivo</h2>
@@ -313,6 +314,7 @@ const $ = id => document.getElementById(id);
 let quakes = DATA.events;
 let generated = DATA.generated;
 let live = false, liveTried = false, summary = null;
+let tsuList = DATA.events.filter(e => e.tsunami).sort((a,b) => b.time - a.time).slice(0,5), tsuAt = 0;
 const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
   set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
@@ -327,10 +329,8 @@ const T = {
     logH:"Últimos sismos del planeta", minMag:"Magnitud mínima", o0:"Magnitudes", o5:"M5 o más", o6:"M6 o más", o7:"M7 o más",
     sort:"Ordenar por", sTime:"Más recientes", sMag:"Mayor magnitud",
     ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", by:"Creado por", more:"Más sismos", less:"Menos sismos",
-    tsuH:"Alertas de tsunami", badge:"Sin alerta al 10 oct · NTWC",
-    tsu1:"Al 10 de octubre, el Centro Nacional de Alerta de Tsunamis de EE. UU. informaba que no había advertencia, aviso, vigilancia ni amenaza vigente para Alaska, Columbia Británica y la costa oeste de EE. UU. Revisa tsunami.gov para el estado actual.",
-    tsu2:"Hay una declaración informativa por el sismo de Panamá del 9 de octubre (20:25 UTC). El NTWC lo cita como M6,9 y el USGS lo lista como M6,6, con boletín de tsunami asociado.",
-    tsu3:"No verificado en esta captura: PTWC (Pacífico), SHOA (Chile) y Océano Índico. Consúltalos en las fuentes oficiales.",
+    tsuH:"Últimas alertas de tsunami", badgeLive:"En vivo · USGS", badgeSnap:"Captura guardada", tsuEmpty:"Sin boletines de tsunami recientes.",
+    tsuNote:"Son sismos con boletín de tsunami asociado en el USGS. No confirman que haya ocurrido un tsunami. Para alertas vigentes consulta PTWC, SHOA y NTWC en las fuentes oficiales.",
     srcH:"Fuentes oficiales en vivo",
     shoa:"SHOA Chile ↗", shoaD:"Servicio Nacional de Alarma de Maremotos",
     csn:"Centro Sismológico Nacional ↗", csnD:"Sismos recientes en Chile",
@@ -349,10 +349,8 @@ const T = {
     logH:"Latest earthquakes on the planet", minMag:"Minimum magnitude", o0:"Magnitudes", o5:"M5 or higher", o6:"M6 or higher", o7:"M7 or higher",
     sort:"Sort by", sTime:"Most recent", sMag:"Largest first",
     ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", by:"Created by", more:"More earthquakes", less:"Fewer earthquakes",
-    tsuH:"Tsunami alerts", badge:"No alert on Oct 10 · NTWC",
-    tsu1:"As of October 10, the US National Tsunami Warning Center reported no warning, advisory, watch or threat in effect for Alaska, British Columbia and the US West Coast. Check tsunami.gov for the current status.",
-    tsu2:"An informational statement is in effect for the October 9 Panama earthquake (20:25 UTC). The NTWC cites it as M6.9 and the USGS lists it as M6.6, with an associated tsunami bulletin.",
-    tsu3:"Not verified in this snapshot: PTWC (Pacific), SHOA (Chile) and the Indian Ocean. Check them at the official sources.",
+    tsuH:"Latest tsunami alerts", badgeLive:"Live · USGS", badgeSnap:"Saved snapshot", tsuEmpty:"No recent tsunami bulletins.",
+    tsuNote:"These are earthquakes with an associated tsunami bulletin at the USGS. They do not confirm that a tsunami occurred. For current alerts check PTWC, SHOA and NTWC in the official sources.",
     srcH:"Official live sources",
     shoa:"SHOA Chile ↗", shoaD:"Chile's National Tsunami Alarm Service",
     csn:"National Seismological Center (Chile) ↗", csnD:"Recent earthquakes in Chile",
@@ -562,6 +560,24 @@ function render(){
   });
 }
 
+function renderTsu(){
+  const t = T[lang], ul = $("tsu-rows"); ul.textContent = "";
+  $("tsu-badge").textContent = live ? t.badgeLive : t.badgeSnap;
+  if (!tsuList.length){ const li = document.createElement("li"); li.className = "empty"; li.textContent = t.tsuEmpty; ul.append(li); return; }
+  const fDay = fmt({day:"2-digit",month:"short"}), fHour = fmt({hour:"2-digit",minute:"2-digit"});
+  tsuList.forEach(q => {
+    const li = document.createElement("li"); li.className = "row";
+    const mag = document.createElement("div"); mag.className = "mag " + magClass(q.mag); mag.textContent = num(q.mag,1);
+    const pl = document.createElement("div"); pl.className = "place";
+    const a = document.createElement("a"); a.href = q.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = q.place;
+    pl.append(a);
+    const w = document.createElement("div"); w.className = "when";
+    const d = new Date(q.time); w.textContent = fDay.format(d) + " " + fHour.format(d);
+    const sm = document.createElement("small"); sm.textContent = ago(q.time); w.append(sm);
+    li.append(mag, pl, w); ul.append(li);
+  });
+}
+
 /* Datos en vivo: funciona al publicar el HTML fuera de Claude. Si falla, queda la captura guardada. */
 async function loadLive(){
   const FEED = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
@@ -569,11 +585,13 @@ async function loadLive(){
   const now = Date.now(), iso = ms => new Date(ms).toISOString().slice(0,19);
   const d7 = iso(now - 7*864e5), d1 = iso(now - 864e5);
   const get = u => fetch(u, {cache:"no-store"}).then(r => { if (!r.ok) throw new Error("http " + r.status); return r; });
-  const [feed, c7, c1, mx] = await Promise.allSettled([
+  const needTsu = Date.now() - tsuAt > 1800000;
+  const [feed, c7, c1, mx, tsuR] = await Promise.allSettled([
     get(FEED).then(r => r.json()),
     get(API + "count?starttime=" + d7 + "&minmagnitude=4").then(r => r.text()),
     get(API + "count?starttime=" + d1 + "&minmagnitude=4").then(r => r.text()),
-    get(API + "query?format=geojson&starttime=" + d7 + "&minmagnitude=4&orderby=magnitude&limit=1").then(r => r.json())
+    get(API + "query?format=geojson&starttime=" + d7 + "&minmagnitude=4&orderby=magnitude&limit=1").then(r => r.json()),
+    needTsu ? get(API + "query?format=geojson&starttime=" + iso(now - 365*864e5) + "&minmagnitude=5.5&orderby=time&limit=500").then(r => r.json()) : Promise.reject("cached")
   ]);
   liveTried = true;
   const feats = feed.status === "fulfilled" && feed.value && Array.isArray(feed.value.features) ? feed.value.features : [];
@@ -590,16 +608,22 @@ async function loadLive(){
   else { const t = evs.reduce((a,b) => b.mag > a.mag ? b : a); max = {mag:t.mag, place:t.place, url:t.url}; }
   summary = {m4w:cnt(c7), m4d:cnt(c1), tsu:evs.filter(e => e.tsunami).length, max};
   quakes = evs;
+  const toEv = f => ({mag:f.properties.mag, place:f.properties.place || "", time:f.properties.time, tsunami:true,
+    lon:f.geometry.coordinates[0], lat:f.geometry.coordinates[1], depth:f.geometry.coordinates[2] || 0, url:f.properties.url || "https://earthquake.usgs.gov/earthquakes/map/"});
+  if (tsuR.status === "fulfilled" && tsuR.value && Array.isArray(tsuR.value.features)) {
+    tsuList = tsuR.value.features.filter(f => f.properties && f.properties.tsunami === 1 && f.properties.mag != null && f.geometry).map(toEv).sort((a,b) => b.time - a.time).slice(0,5);
+    tsuAt = Date.now();
+  } else if (needTsu) { tsuList = evs.filter(e => e.tsunami).slice(0,5); }
   generated = feed.value.metadata && feed.value.metadata.generated ? feed.value.metadata.generated : now;
   live = true;
-  header(); stats(); drawMap(); render();
+  header(); stats(); drawMap(); render(); renderTsu();
 }
 
 function setLang(l, persist){
   lang = l;
   document.documentElement.lang = l;
   $("lang").value = l;
-  applyLang(); header(); stats(); drawMap(); render(); wxRefresh();
+  applyLang(); header(); stats(); drawMap(); render(); renderTsu(); wxRefresh();
   if (persist) store.set("lang", l);
 }
 
@@ -850,7 +874,7 @@ $("theme").addEventListener("click", () => {
 $("f-q").addEventListener("input", () => { limit = 5; render(); });
 $("more").addEventListener("click", () => { limit = limit > 5 ? 5 : 30; render(); });
 let rzt; window.addEventListener("resize", () => { clearTimeout(rzt); rzt = setTimeout(drawMap, 150); });
-setInterval(() => { header(); render(); }, 60000);
+setInterval(() => { header(); render(); renderTsu(); }, 60000);
 setInterval(() => { if (live) loadLive(); }, 300000);
 </script>
 </body>

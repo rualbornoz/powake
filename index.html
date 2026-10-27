@@ -98,6 +98,7 @@ html{scroll-behavior:smooth}
 .stat span{font-size:.8rem;color:var(--muted)}
 .stats{gap:8px}
 .stats .stat{padding:10px 14px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
+.stats .stat .stsec{display:block;font-style:normal;font-family:var(--f-data);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .stats .stat b{font-size:1.3rem;font-weight:800}
 .stats .stat span{font-size:.86rem;line-height:1.25}
 .stat .place-note{display:block;margin-top:4px;font-size:.74rem;line-height:1.3;color:var(--muted);text-decoration:none;overflow-wrap:anywhere}
@@ -179,6 +180,8 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appeara
 .row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
 .row:first-child{border-top:0}
 .mag{font-family:var(--f-display);font-weight:700;font-size:1.25rem;text-align:center;border-radius:var(--r-sm);padding:6px 0;font-variant-numeric:tabular-nums}
+.mag.wind{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;padding:5px 0}
+.mag.wind small{font-size:.62rem;font-weight:600;letter-spacing:.02em}
 .mag.m4{background:var(--m4);color:var(--m4-fg)} .mag.m6{background:var(--m6);color:var(--m6-fg)} .mag.m7{background:var(--m7);color:var(--m7-fg)}
 .place{min-width:0}
 .place a{color:var(--ink);font-weight:500;text-decoration:none;overflow-wrap:anywhere}
@@ -268,10 +271,10 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
   </section>
 
   <section class="stats" aria-label="Resumen">
-    <div class="stat"><b id="s-count">…</b><span data-i18n="stCount">sismos M4+ en 7 días</span></div>
-    <div class="stat"><b id="s-max">…</b><span data-i18n="stMax">magnitud máxima en 7 días</span><a class="place-note" id="s-max-place" target="_blank" rel="noopener" hidden></a></div>
-    <div class="stat"><b id="s-m6">…</b><span data-i18n="stM6">sismos M4+ en 24 horas</span></div>
-    <div class="stat"><b id="s-tsu">…</b><span data-i18n="stTsu">con boletín de tsunami en 7 días</span></div>
+    <div class="stat"><em class="stsec" data-i18n="nQuakes">Sismos</em><b id="s-count">…</b><span data-i18n="stCount">sismos M4+ en 7 días</span></div>
+    <div class="stat"><em class="stsec" data-i18n="nQuakes">Sismos</em><b id="s-max">…</b><span data-i18n="stMax">magnitud máxima en 7 días</span><a class="place-note" id="s-max-place" target="_blank" rel="noopener" hidden></a></div>
+    <div class="stat"><em class="stsec" data-i18n="nStorms">Huracanes</em><b id="s-storm">…</b><span data-i18n="stStorm">huracanes en los últimos 7 días</span></div>
+    <div class="stat"><em class="stsec" data-i18n="nTsu">Tsunamis</em><b id="s-tsu">…</b><span data-i18n="stTsu">con boletín de tsunami en 7 días</span></div>
   </section>
 
     <div class="search" id="sec-log">
@@ -393,7 +396,7 @@ const store = {
 const T = {
   es: {
     themeAria:"Cambiar entre tema claro y oscuro", eyebrow:"Terremoto · Clima · Océanos", h1:"Monitorea: Sismos, tsunamis, huracanes, y clima mundial", usgs:"Ver datos del USGS",
-    stCount:"sismos M4+ en 7 días", stMax:"magnitud máxima en 7 días", stM6:"sismos M4+ en 24 horas", stTsu:"con boletín de tsunami en 7 días",
+    stCount:"sismos M4+ en 7 días", stMax:"magnitud máxima en 7 días", stStorm:"huracanes en los últimos 7 días", stTsu:"con boletín de tsunami en 7 días",
     mapH:"Epicentros y Anillo de Fuego", mapAria:"Mapamundi con continentes, el Anillo de Fuego y los epicentros recientes", ringLbl:"ANILLO DE FUEGO", legRing:"Anillo de Fuego (trazado aproximado)",
     legLow:"Menos de M6", legM6:"M6 a 6,9", legM7:"M7 o más", legNote:"El tamaño crece con la magnitud. Toca un punto para abrir el evento.",
     logH:"Últimos sismos del planeta", minMag:"Magnitud mínima", o0:"Magnitudes", o5:"M5 o más", o6:"M6 o más", o7:"M7 o más",
@@ -413,7 +416,7 @@ const T = {
   },
   en: {
     themeAria:"Switch between light and dark theme", eyebrow:"Earthquakes · Weather · Oceans", h1:"Monitor: Earthquakes, tsunamis, hurricanes, and global weather", usgs:"View USGS data",
-    stCount:"M4+ earthquakes in 7 days", stMax:"maximum magnitude in 7 days", stM6:"M4+ earthquakes in 24 hours", stTsu:"with tsunami bulletin in 7 days",
+    stCount:"M4+ earthquakes in 7 days", stMax:"maximum magnitude in 7 days", stStorm:"hurricanes in the last 7 days", stTsu:"with tsunami bulletin in 7 days",
     mapH:"Epicenters and the Ring of Fire", mapAria:"World map with continents, the Ring of Fire and recent epicenters", ringLbl:"RING OF FIRE", legRing:"Ring of Fire (approximate)",
     legLow:"Below M6", legM6:"M6 to 6.9", legM7:"M7 or higher", legNote:"Size grows with magnitude. Tap a dot to open the event.",
     logH:"Latest earthquakes on the planet", minMag:"Minimum magnitude", o0:"Magnitudes", o5:"M5 or higher", o6:"M6 or higher", o7:"M7 or higher",
@@ -482,7 +485,7 @@ function header(){
 }
 
 function stats(){
-  const ids = ["s-count","s-max","s-m6","s-tsu"], place = $("s-max-place");
+  const ids = ["s-count","s-max","s-tsu"], place = $("s-max-place");
   if (!live || !summary) {
     /* Sin datos en vivo no se pueden calcular los conteos de 7 días ni de 24 horas */
     ids.forEach(id => { $(id).textContent = liveTried ? "—" : "…"; });
@@ -491,7 +494,6 @@ function stats(){
   }
   const n = v => v == null ? "—" : num(v,0);
   $("s-count").textContent = n(summary.m4w);
-  $("s-m6").textContent = n(summary.m4d);
   $("s-tsu").textContent = n(summary.tsu);
   const mx = summary.max;
   $("s-max").textContent = mx ? num(mx.mag,1) : "—";
@@ -960,6 +962,7 @@ async function loadStorms(){
 function renderStorms(){
   const t = T[lang], ul = $("st-rows"), all = STORM.list, shown = all.slice(0, STORM.limit);
   $("st-badge").textContent = STORM.ok ? t.stLive : t.badgeSnap;
+  $("s-storm").textContent = !STORM.tried ? "…" : !STORM.ok ? "—" : num(all.filter(sv => sv.last.t >= Date.now() - 7*864e5).length, 0);
   $("st-more-wrap").hidden = all.length <= 5;
   { const mb = $("st-more"); mb.textContent = STORM.limit > 5 ? t.stLess : t.stMore; }
   ul.textContent = "";
@@ -968,7 +971,8 @@ function renderStorms(){
   shown.forEach(sv => {
     const li = document.createElement("li"); li.className = "row";
     const lv = stLevel(sv.max), mag = document.createElement("div"); mag.className = "mag " + lv;
-    mag.textContent = sv.max == null ? "—" : String(Math.round(sv.max)); mag.title = (sv.max == null ? "" : t.stMaxWind + " " + Math.round(sv.max) + " km/h");
+    if (sv.max == null) mag.textContent = "—"; else { mag.classList.add("wind"); const wn = document.createElement("span"); wn.textContent = String(Math.round(sv.max)); const wu = document.createElement("small"); wu.textContent = "km/h"; mag.append(wn, wu); }
+    mag.title = (sv.max == null ? "" : t.stMaxWind + " " + Math.round(sv.max) + " km/h");
     const pl = document.createElement("div"); pl.className = "place";
     const a = document.createElement("a"); a.href = sv.url; a.target = "_blank"; a.rel = "noopener";
     const kind = sv.region === "rAtl" || sv.region === "rEP" ? t.stHur : sv.region === "rWP" ? t.stTyp : t.stCyc;
@@ -977,7 +981,6 @@ function renderStorms(){
     const r1 = document.createElement("span"); r1.textContent = t[sv.region];
     const r2 = document.createElement("span"); r2.textContent = sv.closed ? t.stEnded : t.stActive;
     meta.append(r1, r2);
-    if (sv.max != null) { const r3 = document.createElement("span"); r3.textContent = t.stMaxWind + " " + Math.round(sv.max) + " km/h"; meta.append(r3); }
     pl.append(a, meta);
     const w = document.createElement("div"); w.className = "when";
     const d = new Date(sv.last.t); w.textContent = fDay.format(d) + " " + fHour.format(d);

@@ -84,12 +84,20 @@ h1{font-family:var(--f-display);font-weight:900;font-size:clamp(1.9rem,5vw,2.8re
 .links .live span{display:inline;font-size:inherit;color:inherit}
 
 /* Resumen */
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+[id^="sec-"]{scroll-margin-top:16px}
+.pills{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:3px 2px 5px;margin:0 -2px}
+.pills::-webkit-scrollbar{display:none}
+.pills a{flex:0 0 auto;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:var(--r-ctl);border:1px solid var(--gray-line);background:var(--surface);color:var(--ink);font-weight:600;font-size:.9rem;text-decoration:none}
+.pills a:hover{background:var(--btn);color:var(--on-btn);border-color:var(--btn)}
+.pills a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .stat{background:var(--tile);border-radius:var(--r-card);padding:16px 20px;min-width:0}
 .stat b{display:block;font-family:var(--f-display);font-size:1.7rem;line-height:1.1;font-variant-numeric:tabular-nums}
 .stat span{font-size:.8rem;color:var(--muted)}
 .stats{gap:8px}
-.stats .stat{padding:10px 14px;border-radius:20px}
+.stats .stat{padding:10px 14px;border-radius:20px;background:var(--surface);box-shadow:var(--shadow)}
 .stats .stat b{font-size:1.3rem;font-weight:800}
 .stats .stat span{font-size:.86rem;line-height:1.25}
 .stat .place-note{display:block;margin-top:4px;font-size:.74rem;line-height:1.3;color:var(--muted);text-decoration:none;overflow-wrap:anywhere}
@@ -117,7 +125,8 @@ svg.map{display:block;width:100%;height:auto}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.28)}
 
 /* Clima y océanos */
-.wxsub{margin:0 0 4px;color:var(--muted);font-size:.9rem}
+.wx .badge{margin-top:6px}
+.wxsub{margin:8px 0 4px;color:var(--muted);font-size:.9rem}
 .wx .seg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0 10px}
 .wx .seg button{font:inherit;font-size:.85rem;font-weight:600;height:40px;border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;padding:0 4px;min-width:0}
 @media (max-width:560px){.wx .seg{gap:4px}.wx .seg button{font-size:.74rem;letter-spacing:-.01em}}
@@ -136,6 +145,18 @@ svg.wxmap{display:block;width:100%;height:auto;max-height:540px;margin:0 auto;bo
 .wxsrc,.wxnote{margin:8px 0 0;font-size:.8rem;color:var(--muted)}
 .wxnote{background:#fdf6d8;border-radius:var(--r-sm);padding:10px 14px;color:#5c4a00}
 :root[data-theme="dark"] .wxnote{background:#3a3418;color:#f3e7a8}
+.nino{margin-top:22px;border-top:1px solid var(--line);padding-top:18px}
+.nino h3{font-family:var(--f-display);font-size:1.1rem;margin:0}
+.nino p{margin:8px 0 0}
+.nino .ninodate{font-family:var(--f-data);font-size:.78rem;color:var(--muted);margin-top:2px}
+.nino .small{font-size:.8rem;color:var(--muted)}
+.ninogrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.ninoitem{background:var(--tile);border-radius:var(--r-sm);padding:14px 16px;min-width:0}
+.ninoitem h4{margin:0 0 4px;font-size:.95rem}
+.ninoitem p{margin:6px 0 0;font-size:.9rem}
+.ninoitem ul{margin:6px 0 0;padding-left:18px;font-size:.9rem}
+.ninoitem li{margin:5px 0}
+@media (max-width:640px){.ninogrid{grid-template-columns:1fr}}
 .wxcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:14px}
 .wxcards .wxname{grid-column:1/-1;font-weight:700;font-size:1rem}
 
@@ -224,9 +245,16 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     </div>
   </header>
 
-  <section class="panel" aria-labelledby="map-h">
+  <nav class="pills" aria-label="Secciones" data-i18n-aria="navAria">
+    <a href="#sec-map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg><span data-i18n="nMap">Mapa</span></a>
+    <a href="#sec-log"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-7 4 14L16 12h5"/></svg><span data-i18n="nQuakes">Sismos</span></a>
+    <a href="#sec-wx"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4 4 0 0 1-.6-7.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/></svg><span data-i18n="nWx">Clima</span></a>
+    <a href="#sec-tsu"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 16c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M3 10c3-6 8-7 13-4-3 0-4 2-4 4"/></svg><span data-i18n="nTsu">Tsunamis</span></a>
+  </nav>
+
+  <section class="panel" id="sec-map" aria-labelledby="map-h">
     <h2 id="map-h" data-i18n="mapH">Epicentros y Anillo de Fuego</h2>
-    <div class="mapbox"><svg class="map" id="map" viewBox="0 0 720 300" role="img" data-i18n-aria="mapAria" aria-label="Mapamundi con continentes, el Anillo de Fuego y los epicentros de la captura"></svg></div>
+    <div class="mapbox"><svg class="map" id="map" viewBox="0 0 720 300" role="img" data-i18n-aria="mapAria" aria-label="Mapamundi con continentes, el Anillo de Fuego y los epicentros recientes"></svg></div>
     <div class="legend">
       <span><i style="background:var(--m4)"></i><span data-i18n="legLow">Menos de M6</span></span>
       <span><i style="background:var(--m6)"></i><span data-i18n="legM6">M6 a 6,9</span></span>
@@ -243,13 +271,13 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <div class="stat"><b id="s-tsu">…</b><span data-i18n="stTsu">con boletín de tsunami en 7 días</span></div>
   </section>
 
-    <div class="search">
+    <div class="search" id="sec-log">
       <input type="search" id="f-q" data-i18n-ph="ph" data-i18n-aria="phAria" placeholder="Buscar país o ciudad" aria-label="Buscar país o ciudad">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     </div>
   <section class="panel" aria-labelledby="log-h">
     <div class="logh">
-      <h2 id="log-h" data-i18n="logH">Últimos sismos del planeta</h2>
+      <div><h2 id="log-h" data-i18n="logH">Últimos sismos del planeta</h2><span class="badge info" id="log-badge"></span></div>
       <span class="count" id="f-count"></span>
     </div>
     <div class="controls">
@@ -262,8 +290,9 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <div class="more" id="more-wrap"><button type="button" class="btn-more" id="more" data-i18n="more">Más sismos</button></div>
   </section>
 
-  <section class="panel wx" aria-labelledby="wx-h">
+  <section class="panel wx" id="sec-wx" aria-labelledby="wx-h">
     <h2 id="wx-h" data-i18n="wxH">Clima y océanos</h2>
+    <span class="badge info" id="wx-badge"></span>
     <p class="wxsub" data-i18n="wxSub">Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.</p>
     <div class="seg" id="wx-layers" role="group" data-i18n-aria="wxLayersAria" aria-label="Capa del mapa">
       <button type="button" data-layer="temp" data-i18n="lTemp">Temp</button>
@@ -280,9 +309,34 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <p class="wxsrc" id="wx-src"></p>
     <p class="wxnote" id="wx-note" hidden></p>
     <div class="wxcards" id="wx-cards" hidden></div>
+    <div class="nino" id="nino">
+      <h3 data-i18n="ninoH">Super El Niño</h3>
+      <p class="ninodate" data-i18n="ninoDate">Información al 26 de octubre de 2026</p>
+      <p data-i18n="ninoLead">Se espera un El Niño de fuerza excepcional: la OMM advierte que podría ser el más fuerte registrado. Se mantendrá activo varios meses más.</p>
+      <div class="ninogrid">
+        <div class="ninoitem"><h4 data-i18n="ninoStateH">Cómo va</h4>
+          <p data-i18n="ninoState1">NOAA: el promedio de julio a septiembre fue 1,7 °C sobre lo normal en el Pacífico ecuatorial, y espera 2,5 °C o más hacia fines de año.</p>
+          <p data-i18n="ninoState2">OMM: el Pacífico tropical podría llegar a 3,8 °C sobre el promedio entre noviembre y enero, un nivel sin precedentes en sus registros.</p></div>
+        <div class="ninoitem"><h4 data-i18n="ninoPeakH">Cuándo es el peak</h4>
+          <p data-i18n="ninoPeak1">Hacia finales de 2026, según la OMM. El CIIFEN lo ubica entre octubre y diciembre, con anomalías sobre 3 °C.</p></div>
+        <div class="ninoitem"><h4 data-i18n="ninoWxH">Clima y zonas afectadas</h4>
+          <ul>
+            <li data-i18n="ninoWet">Más lluvias: suroeste y este de EE. UU., norte del Caribe, África Oriental (con riesgo de inundaciones hasta diciembre), costa de Ecuador y Perú, centro de Chile y sur de Brasil.</li>
+            <li data-i18n="ninoDry">Más seco y con riesgo de sequía: Centroamérica, norte de Sudamérica y Amazonía, sur de Chile, África Austral desde noviembre y sudeste asiático.</li>
+            <li data-i18n="ninoHot">Más calor: de 2 a 3,5 °C sobre lo normal en buena parte de Sudamérica (CIIFEN). En el sudeste asiático, más riesgo de calor, incendios y humo (OMM).</li>
+          </ul></div>
+        <div class="ninoitem"><h4 data-i18n="ninoAfterH">Después del peak</h4>
+          <ul>
+            <li data-i18n="ninoAfter1">El CIIFEN espera que siga activo al menos hasta el primer trimestre de 2027.</li>
+            <li data-i18n="ninoAfter2">La OMM advierte que sus efectos durarán bastante más que el peak. Aún no hay una fecha de término pronosticada.</li>
+            <li data-i18n="ninoAfter3">Los impactos continúan: cosechas, suministro de agua y hasta 50 millones de personas con más hambre, según la ONU.</li>
+          </ul></div>
+      </div>
+      <p class="small" data-i18n="ninoSrc">Fuentes: OMM y NOAA, vía The Weather Company (22 oct 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.</p>
+    </div>
   </section>
 
-  <section class="tsu" aria-labelledby="tsu-h">
+  <section class="tsu" id="sec-tsu" aria-labelledby="tsu-h">
     <div>
       <h2 id="tsu-h" data-i18n="tsuH">Últimas alertas de tsunami</h2>
       <span class="badge info" id="tsu-badge"></span>
@@ -302,7 +356,7 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
   </section>
 
   <footer>
-    <span data-i18n="foot1">Fuentes: USGS Earthquake Hazards Program (feed de sismos M4,5+ de los últimos 7 días y conteos M4+ de su API) y tsunami.gov. Las horas se muestran en tu hora local. Si el USGS no responde, la página muestra una captura guardada.</span>
+    <span data-i18n="foot1">Fuentes: USGS Earthquake Hazards Program (feed de sismos M4,5+ de los últimos 7 días y conteos M4+ de su API) y tsunami.gov. Las horas se muestran en tu hora local. Si el USGS no responde, la página muestra «Actualizando datos…» hasta recuperar la conexión.</span>
     <span data-i18n="foot2">Esta página no reemplaza los avisos oficiales. Ante una alerta de tsunami, sigue las instrucciones de las autoridades locales.</span>
     <span class="credit">Powake Inc. | <span data-i18n="by">Creado por</span> <a href="https://rualbornoz.framer.website/" target="_blank" rel="noopener">Rubén Albornoz</a></span>
   </footer>
@@ -324,41 +378,41 @@ const T = {
   es: {
     themeAria:"Cambiar entre tema claro y oscuro", eyebrow:"Terremoto · Clima · Océanos", h1:"Monitorea: Sismos, clima, y tsunamis del mundo", usgs:"Ver datos del USGS",
     stCount:"sismos M4+ en 7 días", stMax:"magnitud máxima en 7 días", stM6:"sismos M4+ en 24 horas", stTsu:"con boletín de tsunami en 7 días",
-    mapH:"Epicentros y Anillo de Fuego", mapAria:"Mapamundi con continentes, el Anillo de Fuego y los epicentros de la captura", ringLbl:"ANILLO DE FUEGO", legRing:"Anillo de Fuego (trazado aproximado)",
+    mapH:"Epicentros y Anillo de Fuego", mapAria:"Mapamundi con continentes, el Anillo de Fuego y los epicentros recientes", ringLbl:"ANILLO DE FUEGO", legRing:"Anillo de Fuego (trazado aproximado)",
     legLow:"Menos de M6", legM6:"M6 a 6,9", legM7:"M7 o más", legNote:"El tamaño crece con la magnitud. Toca un punto para abrir el evento.",
     logH:"Últimos sismos del planeta", minMag:"Magnitud mínima", o0:"Magnitudes", o5:"M5 o más", o6:"M6 o más", o7:"M7 o más",
     sort:"Ordenar por", sTime:"Más recientes", sMag:"Mayor magnitud",
-    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", by:"Creado por", more:"Más sismos", less:"Menos sismos",
-    tsuH:"Últimas alertas de tsunami", badgeLive:"En vivo · USGS", badgeSnap:"Captura guardada", tsuEmpty:"Sin boletines de tsunami recientes.",
+    ph:"Buscar país o ciudad", phAria:"Buscar país o ciudad", empty:"Ningún sismo coincide con estos filtros.", by:"Creado por", navAria:"Ir a una sección", nMap:"Mapa", nQuakes:"Sismos", nWx:"Clima", nTsu:"Tsunamis", more:"Más sismos", less:"Menos sismos",
+    tsuH:"Últimas alertas de tsunami", badgeLive:"En vivo · USGS", badgeSnap:"Actualizando datos…", tsuEmpty:"Sin boletines de tsunami recientes.",
     tsuNote:"Son sismos con boletín de tsunami asociado en el USGS. No confirman que haya ocurrido un tsunami. Para alertas vigentes consulta PTWC, SHOA y NTWC en las fuentes oficiales.",
     srcH:"Fuentes oficiales en vivo",
     shoa:"SHOA Chile ↗", shoaD:"Servicio Nacional de Alarma de Maremotos",
     csn:"Centro Sismológico Nacional ↗", csnD:"Sismos recientes en Chile",
     ptwc:"PTWC, Centro de Alerta del Pacífico ↗", ptwcD:"Boletines para el Pacífico, Caribe e Índico",
     ntwc:"NTWC, tsunami.gov ↗", ntwcD:"Alaska, Canadá y costa oeste de EE. UU.",
-    foot1:"Fuentes: USGS Earthquake Hazards Program (feed de sismos M4,5+ de los últimos 7 días y conteos M4+ de su API) y tsunami.gov. Las horas se muestran en tu hora local. Si el USGS no responde, la página muestra una captura guardada.",
+    foot1:"Fuentes: USGS Earthquake Hazards Program (feed de sismos M4,5+ de los últimos 7 días y conteos M4+ de su API) y tsunami.gov. Las horas se muestran en tu hora local. Si el USGS no responde, la página muestra «Actualizando datos…» hasta recuperar la conexión.",
     foot2:"Esta página no reemplaza los avisos oficiales. Ante una alerta de tsunami, sigue las instrucciones de las autoridades locales.",
-    stamp:"Captura USGS: ", snap:"Captura ", live:"Datos en vivo del USGS: ", upd:"Actualizado ", of:"de", depth:"prof.", tag:"Boletín de tsunami", west:"O",
+    stamp:"Actualizando datos…", snap:"", live:"Datos en vivo del USGS: ", upd:"Actualizado ", of:"de", depth:"prof.", tag:"Boletín de tsunami", west:"O",
     places:["AMÉRICA DEL NORTE","SUDAMÉRICA","ÁFRICA","EUROPA","ASIA","OCEANÍA","OCÉANO PACÍFICO","OCÉANO ATLÁNTICO","OCÉANO ÍNDICO"]
   },
   en: {
     themeAria:"Switch between light and dark theme", eyebrow:"Earthquakes · Weather · Oceans", h1:"Monitor: Earthquakes, weather and tsunamis worldwide", usgs:"View USGS data",
     stCount:"M4+ earthquakes in 7 days", stMax:"maximum magnitude in 7 days", stM6:"M4+ earthquakes in 24 hours", stTsu:"with tsunami bulletin in 7 days",
-    mapH:"Epicenters and the Ring of Fire", mapAria:"World map with continents, the Ring of Fire and the snapshot's epicenters", ringLbl:"RING OF FIRE", legRing:"Ring of Fire (approximate)",
+    mapH:"Epicenters and the Ring of Fire", mapAria:"World map with continents, the Ring of Fire and recent epicenters", ringLbl:"RING OF FIRE", legRing:"Ring of Fire (approximate)",
     legLow:"Below M6", legM6:"M6 to 6.9", legM7:"M7 or higher", legNote:"Size grows with magnitude. Tap a dot to open the event.",
     logH:"Latest earthquakes on the planet", minMag:"Minimum magnitude", o0:"Magnitudes", o5:"M5 or higher", o6:"M6 or higher", o7:"M7 or higher",
     sort:"Sort by", sTime:"Most recent", sMag:"Largest first",
-    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", by:"Created by", more:"More earthquakes", less:"Fewer earthquakes",
-    tsuH:"Latest tsunami alerts", badgeLive:"Live · USGS", badgeSnap:"Saved snapshot", tsuEmpty:"No recent tsunami bulletins.",
+    ph:"Search country or city", phAria:"Search country or city", empty:"No earthquakes match these filters.", by:"Created by", navAria:"Jump to a section", nMap:"Map", nQuakes:"Earthquakes", nWx:"Weather", nTsu:"Tsunamis", more:"More earthquakes", less:"Fewer earthquakes",
+    tsuH:"Latest tsunami alerts", badgeLive:"Live · USGS", badgeSnap:"Updating data…", tsuEmpty:"No recent tsunami bulletins.",
     tsuNote:"These are earthquakes with an associated tsunami bulletin at the USGS. They do not confirm that a tsunami occurred. For current alerts check PTWC, SHOA and NTWC in the official sources.",
     srcH:"Official live sources",
     shoa:"SHOA Chile ↗", shoaD:"Chile's National Tsunami Alarm Service",
     csn:"National Seismological Center (Chile) ↗", csnD:"Recent earthquakes in Chile",
     ptwc:"PTWC, Pacific Tsunami Warning Center ↗", ptwcD:"Bulletins for the Pacific, Caribbean and Indian Ocean",
     ntwc:"NTWC, tsunami.gov ↗", ntwcD:"Alaska, Canada and the US West Coast",
-    foot1:"Sources: USGS Earthquake Hazards Program (M4.5+ feed for the last 7 days and M4+ counts from its API) and tsunami.gov. Times are shown in your local time. If the USGS does not respond, the page shows a saved snapshot.",
+    foot1:"Sources: USGS Earthquake Hazards Program (M4.5+ feed for the last 7 days and M4+ counts from its API) and tsunami.gov. Times are shown in your local time. If the USGS does not respond, the page shows “Updating data…” until the connection is back.",
     foot2:"This page does not replace official warnings. If a tsunami alert is issued, follow the instructions of local authorities.",
-    stamp:"USGS snapshot: ", snap:"Snapshot taken ", live:"Live USGS data: ", upd:"Updated ", of:"of", depth:"depth", tag:"Tsunami bulletin", west:"W",
+    stamp:"Updating data…", snap:"", live:"Live USGS data: ", upd:"Updated ", of:"of", depth:"depth", tag:"Tsunami bulletin", west:"W",
     places:["NORTH AMERICA","SOUTH AMERICA","AFRICA","EUROPE","ASIA","OCEANIA","PACIFIC OCEAN","ATLANTIC OCEAN","INDIAN OCEAN"]
   }
 };
@@ -404,6 +458,7 @@ function applyLang(){
 function header(){
   const t = T[lang];
   const line = $("stamp-line"); line.textContent = live ? t.live : t.stamp;
+  if (!live) { $("stamp-age").textContent = ""; return; }
   const s = document.createElement("strong");
   s.textContent = fmt({day:"numeric",month:"long",hour:"2-digit",minute:"2-digit",timeZoneName:"short"}).format(new Date(generated));
   line.append(s);
@@ -534,6 +589,7 @@ function render(){
   let list = quakes.filter(q => q.mag >= min && (!term || q.place.toLowerCase().includes(term)));
   list.sort((a,b) => sort==="mag" ? b.mag-a.mag || b.time-a.time : b.time-a.time);
   const shown = list.slice(0, limit);
+  $("log-badge").textContent = live ? t.badgeLive : t.badgeSnap;
   $("f-count").textContent = shown.length + " " + t.of + " " + list.length;
   $("more-wrap").hidden = list.length <= 5;
   { const mb = $("more"), key = limit > 5 ? "less" : "more"; mb.setAttribute("data-i18n", key); mb.textContent = T[lang][key]; }
@@ -636,6 +692,7 @@ function setTheme(t){
    Imágenes de temperatura del mar: NASA GIBS (WMS). Lluvia, presión y temperatura del aire: Open-Meteo (modelo, 1 punto cada 12°).
    Solo funcionan con la página publicada en un hosting: el entorno de Claude bloquea las conexiones externas. */
 Object.assign(T.es, {
+  ninoH:"Super El Niño", ninoDate:"Información al 26 de octubre de 2026", ninoLead:"Se espera un El Niño de fuerza excepcional: la OMM advierte que podría ser el más fuerte registrado. Se mantendrá activo varios meses más.", ninoStateH:"Cómo va", ninoState1:"NOAA: el promedio de julio a septiembre fue 1,7 °C sobre lo normal en el Pacífico ecuatorial, y espera 2,5 °C o más hacia fines de año.", ninoState2:"OMM: el Pacífico tropical podría llegar a 3,8 °C sobre el promedio entre noviembre y enero, un nivel sin precedentes en sus registros.", ninoPeakH:"Cuándo es el peak", ninoPeak1:"Hacia finales de 2026, según la OMM. El CIIFEN lo ubica entre octubre y diciembre, con anomalías sobre 3 °C.", ninoWxH:"Clima y zonas afectadas", ninoWet:"Más lluvias: suroeste y este de EE. UU., norte del Caribe, África Oriental (con riesgo de inundaciones hasta diciembre), costa de Ecuador y Perú, centro de Chile y sur de Brasil.", ninoDry:"Más seco y con riesgo de sequía: Centroamérica, norte de Sudamérica y Amazonía, sur de Chile, África Austral desde noviembre y sudeste asiático.", ninoHot:"Más calor: de 2 a 3,5 °C sobre lo normal en buena parte de Sudamérica (CIIFEN). En el sudeste asiático, más riesgo de calor, incendios y humo (OMM).", ninoAfterH:"Después del peak", ninoAfter1:"El CIIFEN espera que siga activo al menos hasta el primer trimestre de 2027.", ninoAfter2:"La OMM advierte que sus efectos durarán bastante más que el peak. Aún no hay una fecha de término pronosticada.", ninoAfter3:"Los impactos continúan: cosechas, suministro de agua y hasta 50 millones de personas con más hambre, según la ONU.", ninoSrc:"Fuentes: OMM y NOAA, vía The Weather Company (22 oct 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.",
   wxH:"Clima y océanos", wxSub:"Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.",
   lRain:"Lluvias", lPres:"Presión", lTemp:"Temp", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
   wxMapAria:"Mapa del clima con los continentes y la capa elegida",
@@ -650,6 +707,7 @@ Object.assign(T.es, {
   wxErr:"No se pudo cargar el clima de este lugar.", kTemp:"Temperatura", kRain:"Lluvia (última hora)", kPres:"Presión", kWind:"Viento", kHum:"Humedad", kSea:"Agua del mar"
 });
 Object.assign(T.en, {
+  ninoH:"Super El Niño", ninoDate:"Information as of October 26, 2026", ninoLead:"An exceptionally strong El Niño is expected: the WMO warns it could be the strongest on record. It will stay active for several more months.", ninoStateH:"Where it stands", ninoState1:"NOAA: the July–September average was 1.7 °C above normal in the equatorial Pacific, and it expects 2.5 °C or more by the end of the year.", ninoState2:"WMO: the tropical Pacific could reach 3.8 °C above average between November and January, a level never seen in its records.", ninoPeakH:"When it peaks", ninoPeak1:"Toward the end of 2026, according to the WMO. CIIFEN places it between October and December, with anomalies above 3 °C.", ninoWxH:"Weather and affected areas", ninoWet:"Wetter: the US Southwest and East, the northern Caribbean, East Africa (with flood risk through December), the coast of Ecuador and Peru, central Chile and southern Brazil.", ninoDry:"Drier, with drought risk: Central America, northern South America and the Amazon, southern Chile, Southern Africa from November, and Southeast Asia.", ninoHot:"Hotter: 2 to 3.5 °C above normal across much of South America (CIIFEN). In Southeast Asia, higher risk of heat, wildfires and smoke (WMO).", ninoAfterH:"After the peak", ninoAfter1:"CIIFEN expects it to stay active through at least the first quarter of 2027.", ninoAfter2:"The WMO warns its effects will last well beyond the peak. No end date has been forecast yet.", ninoAfter3:"The impacts continue: harvests, water supply and up to 50 million more people facing hunger, according to the UN.", ninoSrc:"Sources: WMO and NOAA, via The Weather Company (Oct 22, 2026); CIIFEN, via Bloomberg Línea (Sep 19, 2026). These are forecasts and may change. “Super El Niño” is a press term for a very strong event.",
   wxH:"Weather and oceans", wxSub:"Rain, pressure, air temperature and sea temperature. Pick a continent or a country.",
   lRain:"Rain", lPres:"Pressure", lTemp:"Temp", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
   wxMapAria:"Weather map with continents and the chosen layer",
@@ -698,7 +756,7 @@ function wxImgUrl(layer){
     ? base + "&LAYERS=IMERG_Precipitation_Rate&FORMAT=image/png&TRANSPARENT=TRUE&TIME=" + wxDay(1)
     : base + "&LAYERS=GHRSST_L4_MUR_Sea_Surface_Temperature&FORMAT=image/png&TRANSPARENT=TRUE&TIME=" + wxDay(3);
 }
-function wxNote(msg){ const n = $("wx-note"); n.hidden = !msg; n.textContent = msg || ""; }
+function wxNote(msg, ok){ const n = $("wx-note"); n.hidden = !msg; n.textContent = msg || ""; $("wx-badge").textContent = ok === true ? T[lang].badgeLive : T[lang].badgeSnap; }
 function wxLoadGrid(){
   if (WX.gridP) return WX.gridP;
   const pts = [];
@@ -787,12 +845,12 @@ async function wxDraw(){
     const im = el("image",{x:30,y:wxY(90),width:660,height:wxY(-90)-wxY(90),preserveAspectRatio:"none"});
     im.setAttribute("href", wxImgUrl(L));
     im.addEventListener("error", () => { if (tok === WX.tok) wxNote(t.wxOff); });
-    im.addEventListener("load", () => { if (tok === WX.tok) wxNote(null); });
+    im.addEventListener("load", () => { if (tok === WX.tok) wxNote(null, true); });
     gC.append(im); return;
   }
   try {
     const g = L === "rain" ? await wxLoadRain() : await wxLoadGrid(); if (tok !== WX.tok) return;
-    wxNote(null);
+    wxNote(null, true);
     const defs = el("defs",{}), f = el("filter",{id:"wblur",x:"-5%",y:"-5%",width:"110%",height:"110%"});
     f.append(el("feGaussianBlur",{stdDeviation:L === "rain" ? 5 : 7})); defs.append(f);
     svg.insertBefore(defs, svg.firstChild);
@@ -844,7 +902,7 @@ function wxFill(){
   cn.value = WX.country;
 }
 function wxRefresh(){
-  wxFill(); wxLegend(); wxCard(); wxDraw();
+  wxNote(null); wxFill(); wxLegend(); wxCard(); wxDraw();
   document.querySelectorAll("#wx-layers button").forEach(b => b.setAttribute("aria-pressed", b.dataset.layer === WX.layer ? "true" : "false"));
 }
 document.querySelectorAll("#wx-layers button").forEach(b => b.addEventListener("click", () => { WX.layer = b.dataset.layer; wxNote(null); wxRefresh(); }));

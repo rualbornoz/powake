@@ -1,2 +1,2 @@
-# powake
-Monitoreo de sismos, clima, y alertas de tsunamis
+# powake (Monitor: Earthquakes, tsunami alerts, Hurricanes, Weather)
+Monitoreo de sismos, huracanes, clima, y alertas de tsunamis

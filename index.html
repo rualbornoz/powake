@@ -153,6 +153,9 @@ svg.wxmap{display:block;width:100%;height:auto;max-height:540px;margin:0 auto;bo
 .nino .small{font-size:.8rem;color:var(--muted)}
 .ninogrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
 .ninoitem{background:var(--tile);border-radius:var(--r-sm);padding:14px 16px;min-width:0}
+.ninoitem.hot{background:#fdf6d8;color:#3d3000}
+:root[data-theme="dark"] .ninoitem.hot{background:#3a3418;color:#f3e7a8}
+.ninoitem.hot .ninosub{color:inherit;opacity:.75}
 .ninoitem h4{margin:0 0 4px;font-size:.95rem}
 .ninoitem p{margin:6px 0 0;font-size:.9rem}
 .ninoitem ul{margin:6px 0 0;padding-left:18px;font-size:.9rem}
@@ -320,6 +323,9 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
       <p class="ninodate" data-i18n="ninoDate">Información al 26 de octubre de 2026</p>
       <p data-i18n="ninoLead">Se espera un El Niño de fuerza excepcional: la OMM advierte que podría ser el más fuerte registrado. Se mantendrá activo varios meses más.</p>
       <div class="ninogrid">
+        <div class="ninoitem hot" id="nino-live"><h4 data-i18n="ninoLiveH">Mar en el Pacífico hoy</h4>
+          <p class="ninoval" id="nino-val">…</p>
+          <p class="ninosub" id="nino-sub"></p></div>
         <div class="ninoitem"><h4 data-i18n="ninoStateH">Cómo va</h4>
           <p data-i18n="ninoState1">NOAA: el promedio de julio a septiembre fue 1,7 °C sobre lo normal en el Pacífico ecuatorial, y espera 2,5 °C o más hacia fines de año.</p>
           <p data-i18n="ninoState2">OMM: el Pacífico tropical podría llegar a 3,8 °C sobre el promedio entre noviembre y enero, un nivel sin precedentes en sus registros.</p></div>
@@ -331,9 +337,6 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
             <li data-i18n="ninoDry">Sequía: Centroamérica, Amazonía, sur de Chile, África Austral y sudeste asiático.</li>
             <li data-i18n="ninoHot">Calor: de 2 a 3,5 °C sobre lo normal en gran parte de Sudamérica.</li>
           </ul></div>
-        <div class="ninoitem" id="nino-live"><h4 data-i18n="ninoLiveH">Mar en el Pacífico hoy</h4>
-          <p class="ninoval" id="nino-val">…</p>
-          <p class="ninosub" id="nino-sub"></p></div>
       </div>
       <p class="small" data-i18n="ninoSrc">Fuentes: OMM y NOAA, vía The Weather Company (22 oct 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). La lectura diaria del mar viene de Open-Meteo. Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.</p>
     </div>
@@ -387,7 +390,7 @@ const $ = id => document.getElementById(id);
 let quakes = DATA.events;
 let generated = DATA.generated;
 let live = false, liveTried = false, summary = null;
-let tsuList = DATA.events.filter(e => e.tsunami).sort((a,b) => b.time - a.time).slice(0,5), tsuAt = 0;
+let tsuList = DATA.events.filter(e => e.tsunami).sort((a,b) => b.time - a.time).slice(0,5), tsuAt = 0, tsuOk = false, tsuYearAt = 0, tsuYear = [];
 const store = {
   get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
   set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
@@ -636,7 +639,7 @@ function render(){
 
 function renderTsu(){
   const t = T[lang], ul = $("tsu-rows"); ul.textContent = "";
-  $("tsu-badge").textContent = live ? t.badgeLive : t.badgeSnap;
+  $("tsu-badge").textContent = tsuOk ? t.badgeLive + " · " + fmt(new Date(tsuAt).toDateString() === new Date().toDateString() ? {hour:"2-digit",minute:"2-digit"} : {day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}).format(new Date(tsuAt)) : t.badgeSnap;
   if (!tsuList.length){ const li = document.createElement("li"); li.className = "empty"; li.textContent = t.tsuEmpty; ul.append(li); return; }
   const fDay = fmt({day:"2-digit",month:"short"}), fHour = fmt({hour:"2-digit",minute:"2-digit"});
   tsuList.forEach(q => {
@@ -653,19 +656,41 @@ function renderTsu(){
 }
 
 /* Datos en vivo: funciona al publicar el HTML fuera de Claude. Si falla, queda la captura guardada. */
+/* Alertas de tsunami: independiente del resto. Mezcla el feed mensual M4,5+ (estático y rápido) con una consulta de 12 meses M5,5+ */
+const tsuToEv = f => ({mag:f.properties.mag, place:f.properties.place || "", time:f.properties.time, tsunami:true,
+  lon:f.geometry.coordinates[0], lat:f.geometry.coordinates[1], depth:f.geometry.coordinates[2] || 0, url:f.properties.url || "https://earthquake.usgs.gov/earthquakes/map/", id:f.id});
+async function loadTsu(){
+  const API = "https://earthquake.usgs.gov/fdsnws/event/1/", now = Date.now();
+  const get = u => fetch(u, {cache:"no-store"}).then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); });
+  const needYear = now - tsuYearAt > 1800000;
+  const [m, w, y] = await Promise.allSettled([
+    get("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson"),
+    get("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson"),
+    needYear ? get(API + "query?format=geojson&starttime=" + new Date(now - 365*864e5).toISOString().slice(0,19) + "&minmagnitude=5.5&orderby=time&limit=500") : Promise.reject("cached")
+  ]);
+  const ok = r => r.status === "fulfilled" && r.value && Array.isArray(r.value.features);
+  if (ok(y)) { tsuYear = y.value.features; tsuYearAt = now; }
+  const sources = [m, w].filter(ok).map(r => r.value.features).concat([tsuYear]);
+  if (!ok(m) && !ok(w) && !tsuYear.length) { tsuOk = false; renderTsu(); return; }
+  const seen = new Set(), all = [];
+  sources.forEach(fs => fs.forEach(f => {
+    if (!f.properties || f.properties.tsunami !== 1 || f.properties.mag == null || !f.geometry || !f.geometry.coordinates) return;
+    const key = f.id || f.properties.url; if (seen.has(key)) return; seen.add(key); all.push(tsuToEv(f));
+  }));
+  all.sort((a,b) => b.time - a.time);
+  tsuList = all.slice(0,5); tsuAt = now; tsuOk = true; renderTsu();
+}
 async function loadLive(){
   const FEED = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
   const API = "https://earthquake.usgs.gov/fdsnws/event/1/";
   const now = Date.now(), iso = ms => new Date(ms).toISOString().slice(0,19);
   const d7 = iso(now - 7*864e5), d1 = iso(now - 864e5);
   const get = u => fetch(u, {cache:"no-store"}).then(r => { if (!r.ok) throw new Error("http " + r.status); return r; });
-  const needTsu = Date.now() - tsuAt > 1800000;
-  const [feed, c7, c1, mx, tsuR] = await Promise.allSettled([
+  const [feed, c7, c1, mx] = await Promise.allSettled([
     get(FEED).then(r => r.json()),
     get(API + "count?starttime=" + d7 + "&minmagnitude=4").then(r => r.text()),
     get(API + "count?starttime=" + d1 + "&minmagnitude=4").then(r => r.text()),
-    get(API + "query?format=geojson&starttime=" + d7 + "&minmagnitude=4&orderby=magnitude&limit=1").then(r => r.json()),
-    needTsu ? get(API + "query?format=geojson&starttime=" + iso(now - 365*864e5) + "&minmagnitude=5.5&orderby=time&limit=500").then(r => r.json()) : Promise.reject("cached")
+    get(API + "query?format=geojson&starttime=" + d7 + "&minmagnitude=4&orderby=magnitude&limit=1").then(r => r.json())
   ]);
   liveTried = true;
   const feats = feed.status === "fulfilled" && feed.value && Array.isArray(feed.value.features) ? feed.value.features : [];
@@ -682,12 +707,6 @@ async function loadLive(){
   else { const t = evs.reduce((a,b) => b.mag > a.mag ? b : a); max = {mag:t.mag, place:t.place, url:t.url}; }
   summary = {m4w:cnt(c7), m4d:cnt(c1), tsu:evs.filter(e => e.tsunami).length, max};
   quakes = evs;
-  const toEv = f => ({mag:f.properties.mag, place:f.properties.place || "", time:f.properties.time, tsunami:true,
-    lon:f.geometry.coordinates[0], lat:f.geometry.coordinates[1], depth:f.geometry.coordinates[2] || 0, url:f.properties.url || "https://earthquake.usgs.gov/earthquakes/map/"});
-  if (tsuR.status === "fulfilled" && tsuR.value && Array.isArray(tsuR.value.features)) {
-    tsuList = tsuR.value.features.filter(f => f.properties && f.properties.tsunami === 1 && f.properties.mag != null && f.geometry).map(toEv).sort((a,b) => b.time - a.time).slice(0,5);
-    tsuAt = Date.now();
-  } else if (needTsu) { tsuList = evs.filter(e => e.tsunami).slice(0,5); }
   generated = feed.value.metadata && feed.value.metadata.generated ? feed.value.metadata.generated : now;
   live = true;
   header(); stats(); drawMap(); render(); renderTsu();
@@ -1065,7 +1084,13 @@ setInterval(() => { WX.gridP = null; WX.rainP = null; if (WX.layer === "pres" ||
 /* Inicio: claro por defecto; idioma según preferencia guardada o zona horaria */
 setTheme(store.get("theme") === "dark" ? "dark" : "light");
 setLang(detectLang(), false);
-loadLive();
+loadLive(); loadTsu(); setInterval(loadTsu, 600000);
+/* Si la pestaña estuvo dormida (celular, computador suspendido), revisa de nuevo al volver */
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible") return;
+  if (Date.now() - tsuAt > 600000) loadTsu();
+  if (live && Date.now() - generated > 600000) loadLive();
+});
 $("lang").addEventListener("change", e => setLang(e.target.value, true));
 $("theme").addEventListener("click", () => {
   const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";

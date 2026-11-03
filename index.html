@@ -320,25 +320,21 @@ footer{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap
     <div class="wxcards" id="wx-cards" hidden></div>
     <div class="nino" id="nino">
       <h3 data-i18n="ninoH">Super El Niño</h3>
-      <p class="ninodate" data-i18n="ninoDate">Información al 26 de octubre de 2026</p>
-      <p data-i18n="ninoLead">Se espera un El Niño de fuerza excepcional: la OMM advierte que podría ser el más fuerte registrado. Se mantendrá activo varios meses más.</p>
+      <p class="ninodate" data-i18n="ninoDate">Revisado el 2 de noviembre de 2026</p>
+      <p data-i18n="ninoLead">El Niño ya batió récords: el 21 de septiembre su anomalía diaria llegó a +3,11 °C, sobre el máximo de 2015. Se espera que siga intensificándose hasta fin de año.</p>
       <div class="ninogrid">
         <div class="ninoitem hot" id="nino-live"><h4 data-i18n="ninoLiveH">Mar en el Pacífico hoy</h4>
           <p class="ninoval" id="nino-val">…</p>
           <p class="ninosub" id="nino-sub"></p></div>
-        <div class="ninoitem"><h4 data-i18n="ninoStateH">Cómo va</h4>
-          <p data-i18n="ninoState1">NOAA: el promedio de julio a septiembre fue 1,7 °C sobre lo normal en el Pacífico ecuatorial, y espera 2,5 °C o más hacia fines de año.</p>
-          <p data-i18n="ninoState2">OMM: el Pacífico tropical podría llegar a 3,8 °C sobre el promedio entre noviembre y enero, un nivel sin precedentes en sus registros.</p></div>
-        <div class="ninoitem"><h4 data-i18n="ninoPeakH">Cuándo es el peak</h4>
-          <p data-i18n="ninoPeak1">Hacia finales de 2026, según la OMM. El CIIFEN lo ubica entre octubre y diciembre, con anomalías sobre 3 °C.</p></div>
-        <div class="ninoitem"><h4 data-i18n="ninoWxH">Clima y zonas afectadas</h4>
+        <div class="ninoitem"><h4 data-i18n="ninoSumH">Resumen actual</h4>
           <ul>
-            <li data-i18n="ninoWet">Más lluvia: EE. UU., África Oriental, costa de Ecuador y Perú, centro de Chile y sur de Brasil.</li>
-            <li data-i18n="ninoDry">Sequía: Centroamérica, Amazonía, sur de Chile, África Austral y sudeste asiático.</li>
-            <li data-i18n="ninoHot">Calor: de 2 a 3,5 °C sobre lo normal en gran parte de Sudamérica.</li>
+            <li data-i18n="ninoSum1">Récord: +3,11 °C (21 sep). NOAA da 83 % de probabilidad de que sea el más fuerte desde 1950 entre octubre y diciembre.</li>
+            <li data-i18n="ninoSum2">Peak: octubre a diciembre (NOAA). Los modelos lo ven entre noviembre y enero, hasta +4,1 °C; la OMM, hasta +3,8 °C.</li>
+            <li data-i18n="ninoSum3">Duración: al menos hasta enero–marzo de 2027 (NOAA). Su efecto en la temperatura global se notaría sobre todo en 2027.</li>
+            <li data-i18n="ninoSum4">Más lluvia: costa de Ecuador y Perú, centro de Chile. Sequía: Amazonía, Centroamérica, África Austral y sudeste asiático.</li>
           </ul></div>
       </div>
-      <p class="small" data-i18n="ninoSrc">Fuentes: OMM y NOAA, vía The Weather Company (22 oct 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). La lectura diaria del mar viene de Open-Meteo. Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.</p>
+      <p class="small" data-i18n="ninoSrc">Fuentes: NOAA CPC, vía Newsweek (8 oct 2026); OMM, vía The Weather Company (22 oct 2026); Carbon Brief (21 sep 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). Próxima actualización del CPC: 12 de noviembre, según su calendario habitual. La lectura diaria del mar viene de Open-Meteo. Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.</p>
     </div>
   </section>
 
@@ -729,7 +725,7 @@ function setTheme(t){
    Imágenes de temperatura del mar: NASA GIBS (WMS). Lluvia, presión y temperatura del aire: Open-Meteo (modelo, 1 punto cada 12°).
    Solo funcionan con la página publicada en un hosting: el entorno de Claude bloquea las conexiones externas. */
 Object.assign(T.es, {
-  ninoH:"Super El Niño", ninoDate:"Análisis al 26 de octubre de 2026", ninoLiveH:"Mar en el Pacífico hoy", ninoLiveZone:"Zona Niño 3.4 (Pacífico ecuatorial)", ninoLiveAgo:"hace 7 días", ninoLiveUpd:"Actualizado", ninoLead:"Se espera un El Niño de fuerza excepcional: la OMM advierte que podría ser el más fuerte registrado. Se mantendrá activo varios meses más.", ninoStateH:"Cómo va", ninoState1:"NOAA: el promedio de julio a septiembre fue 1,7 °C sobre lo normal en el Pacífico ecuatorial, y espera 2,5 °C o más hacia fines de año.", ninoState2:"OMM: el Pacífico tropical podría llegar a 3,8 °C sobre el promedio entre noviembre y enero, un nivel sin precedentes en sus registros.", ninoPeakH:"Cuándo es el peak", ninoPeak1:"Hacia finales de 2026, según la OMM. El CIIFEN lo ubica entre octubre y diciembre, con anomalías sobre 3 °C.", ninoWxH:"Clima y zonas afectadas", ninoWet:"Más lluvia: EE. UU., África Oriental, costa de Ecuador y Perú, centro de Chile y sur de Brasil.", ninoDry:"Sequía: Centroamérica, Amazonía, sur de Chile, África Austral y sudeste asiático.", ninoHot:"Calor: de 2 a 3,5 °C sobre lo normal en gran parte de Sudamérica.",     ninoSrc:"Fuentes: OMM y NOAA, vía The Weather Company (22 oct 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). La lectura diaria del mar viene de Open-Meteo. Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.",
+  ninoSum4:"Más lluvia: costa de Ecuador y Perú, centro de Chile. Sequía: Amazonía, Centroamérica, África Austral y sudeste asiático.", ninoSumH:"Resumen actual", ninoSum1:"Récord: +3,11 °C (21 sep). NOAA da 83 % de probabilidad de que sea el más fuerte desde 1950 entre octubre y diciembre.", ninoSum2:"Peak: octubre a diciembre (NOAA). Los modelos lo ven entre noviembre y enero, hasta +4,1 °C; la OMM, hasta +3,8 °C.", ninoSum3:"Duración: al menos hasta enero–marzo de 2027 (NOAA). Su efecto en la temperatura global se notaría sobre todo en 2027.", ninoH:"Super El Niño", ninoDate:"Revisado el 2 de noviembre de 2026", ninoLiveH:"Mar en el Pacífico hoy", ninoLiveZone:"Zona Niño 3.4 (Pacífico ecuatorial)", ninoLiveAgo:"hace 7 días", ninoLiveUpd:"Actualizado", ninoLead:"El Niño ya batió récords: el 21 de septiembre su anomalía diaria llegó a +3,11 °C, sobre el máximo de 2015. Se espera que siga intensificándose hasta fin de año.",     ninoSrc:"Fuentes: NOAA CPC, vía Newsweek (8 oct 2026); OMM, vía The Weather Company (22 oct 2026); Carbon Brief (21 sep 2026); CIIFEN, vía Bloomberg Línea (19 sep 2026). Próxima actualización del CPC: 12 de noviembre, según su calendario habitual. La lectura diaria del mar viene de Open-Meteo. Son pronósticos y pueden cambiar. «Super El Niño» es un término de prensa para un evento muy fuerte.",
   wxH:"Clima y océanos", wxSub:"Lluvias, presión, temperatura del aire y temperatura del mar. Elige un continente o un país.",
   lRain:"Lluvias", lPres:"Presión", lTemp:"Temp", lSea:"Mar", wxLayersAria:"Capa del mapa", wxContAria:"Continente", wxCountryAria:"País",
   wxMapAria:"Mapa del clima con los continentes y la capa elegida",
@@ -744,7 +740,7 @@ Object.assign(T.es, {
   wxErr:"No se pudo cargar el clima de este lugar.", kTemp:"Temperatura", kRain:"Lluvia (última hora)", kPres:"Presión", kWind:"Viento", kHum:"Humedad", kSea:"Agua del mar"
 });
 Object.assign(T.en, {
-  ninoH:"Super El Niño", ninoDate:"Analysis as of October 26, 2026", ninoLiveH:"Pacific sea today", ninoLiveZone:"Niño 3.4 region (equatorial Pacific)", ninoLiveAgo:"7 days ago", ninoLiveUpd:"Updated", ninoLead:"An exceptionally strong El Niño is expected: the WMO warns it could be the strongest on record. It will stay active for several more months.", ninoStateH:"Where it stands", ninoState1:"NOAA: the July–September average was 1.7 °C above normal in the equatorial Pacific, and it expects 2.5 °C or more by the end of the year.", ninoState2:"WMO: the tropical Pacific could reach 3.8 °C above average between November and January, a level never seen in its records.", ninoPeakH:"When it peaks", ninoPeak1:"Toward the end of 2026, according to the WMO. CIIFEN places it between October and December, with anomalies above 3 °C.", ninoWxH:"Weather and affected areas", ninoWet:"Wetter: the US, East Africa, coastal Ecuador and Peru, central Chile and southern Brazil.", ninoDry:"Drought: Central America, the Amazon, southern Chile, Southern Africa and Southeast Asia.", ninoHot:"Heat: 2 to 3.5 °C above normal across much of South America.",     ninoSrc:"Sources: WMO and NOAA, via The Weather Company (Oct 22, 2026); CIIFEN, via Bloomberg Línea (Sep 19, 2026). The daily sea reading comes from Open-Meteo. These are forecasts and may change. “Super El Niño” is a press term for a very strong event.",
+  ninoSum4:"Wetter: coastal Ecuador and Peru, central Chile. Drought: the Amazon, Central America, Southern Africa and Southeast Asia.", ninoSumH:"Current summary", ninoSum1:"Record: +3.11 °C (Sep 21). NOAA gives an 83% chance it will be the strongest since 1950 between October and December.", ninoSum2:"Peak: October to December (NOAA). Models see it between November and January, up to +4.1 °C; the WMO, up to +3.8 °C.", ninoSum3:"Duration: at least through January–March 2027 (NOAA). Its effect on global temperature would show mostly in 2027.", ninoH:"Super El Niño", ninoDate:"Reviewed on November 2, 2026", ninoLiveH:"Pacific sea today", ninoLiveZone:"Niño 3.4 region (equatorial Pacific)", ninoLiveAgo:"7 days ago", ninoLiveUpd:"Updated", ninoLead:"El Niño has already broken records: on September 21 its daily anomaly reached +3.11 °C, above the 2015 maximum. It is expected to keep strengthening through the end of the year.",     ninoSrc:"Sources: NOAA CPC, via Newsweek (Oct 8, 2026); WMO, via The Weather Company (Oct 22, 2026); Carbon Brief (Sep 21, 2026); CIIFEN, via Bloomberg Línea (Sep 19, 2026). Next CPC update: November 12, on its usual schedule. The daily sea reading comes from Open-Meteo. These are forecasts and may change. “Super El Niño” is a press term for a very strong event.",
   wxH:"Weather and oceans", wxSub:"Rain, pressure, air temperature and sea temperature. Pick a continent or a country.",
   lRain:"Rain", lPres:"Pressure", lTemp:"Temp", lSea:"Sea", wxLayersAria:"Map layer", wxContAria:"Continent", wxCountryAria:"Country",
   wxMapAria:"Weather map with continents and the chosen layer",
